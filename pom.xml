@@ -11,16 +11,16 @@
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>This plugin will make maven interact with SONAR.</description>
-	<url>https://github.com/VandeperreMaarten/sonar-maven-build-breaker</url>
+	<url>https://github.com/VandeperreMaarten/sonar-maven-plugin</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<scm>
-		<connection>scm:git:git@github.com/VandeperreMaarten/sonar-maven-build-breaker.git</connection>
-		<developerConnection>scm:git:git@github.com/VandeperreMaarten/sonar-maven-build-breaker.git</developerConnection>
-		<url>https://github.com/VandeperreMaarten/sonar-maven-build-breaker</url>
+		<connection>scm:git:git@github.com/VandeperreMaarten/sonar-maven-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com/VandeperreMaarten/sonar-maven-plugin.git</developerConnection>
+		<url>https://github.com/VandeperreMaarten/sonar-maven-plugin</url>
 	</scm>
 	<licenses>
 		<license>
