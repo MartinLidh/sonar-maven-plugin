@@ -2,7 +2,7 @@
  * Copyright (c) 2016 by VIAE (http///viae-it.com)
  */
 
-package com.viae.maven.sonar.mojo;
+package com.viae.maven.sonar.mojos;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;

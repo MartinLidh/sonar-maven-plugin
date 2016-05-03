@@ -2,7 +2,7 @@
  * Copyright (c) 2016 by VIAE (http///viae-it.com)
  */
 
-package com.viae.maven.sonar.services;
+package com.viae.maven.sonar.exceptions;
 
 /**
  * Exception that will be thrown when a SONAR quality check fails.

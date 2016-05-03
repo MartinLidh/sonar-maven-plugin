@@ -2,9 +2,9 @@
  * Copyright (c) 2016 by VIAE (http///viae-it.com)
  */
 
-package com.viae.maven.sonar.mojo;
+package com.viae.maven.sonar.mojos;
 
-import com.viae.maven.sonar.services.SonarQualityException;
+import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.maven.plugin.AbstractMojo;

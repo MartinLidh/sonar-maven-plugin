@@ -4,7 +4,9 @@
 
 package com.viae.maven.sonar.services;
 
+import com.viae.maven.sonar.exceptions.SonarQualityException;
 import org.sonar.wsclient.Sonar;
+import org.sonar.wsclient.SonarClient;
 
 /**
  * Service to validate (a) SONAR quality gate(s).
@@ -20,6 +22,8 @@ public interface SonarQualityGateService {
      * @throws SonarQualityException will be thrown when the given project doesn't pass the linked quality gate.
      */
     void validateQualityGate(Sonar sonar, String projectKey) throws SonarQualityException;
+
+	void linkQualityGateToProject(SonarClient client, String projectKey, String qualityGateName) throws SonarQualityException;
 
 	/**
 	 * Compose the project key used by SONAR based on the project key and an optional branch name.

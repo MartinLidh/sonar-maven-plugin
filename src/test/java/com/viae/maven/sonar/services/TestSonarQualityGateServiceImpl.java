@@ -4,6 +4,7 @@
 
 package com.viae.maven.sonar.services;
 
+import com.viae.maven.sonar.exceptions.SonarQualityException;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
