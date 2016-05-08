@@ -12,9 +12,6 @@ package com.viae.maven.sonar.exceptions;
 public class GitException  extends Exception {
     private static final String GIT_ERROR_MESSAGE = "Something went wrong while executing GIT command, verify that git is installed properly on the system";
 
-    public GitException(final String errorMessage){
-        super(errorMessage);
-    }
     public GitException(final Exception cause){
         super(GIT_ERROR_MESSAGE, cause);
     }

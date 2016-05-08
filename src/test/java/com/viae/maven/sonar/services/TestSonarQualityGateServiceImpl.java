@@ -56,6 +56,34 @@ public class TestSonarQualityGateServiceImpl {
     }
 
     @Test
+    public void noConditionsInServerResponseOnError() throws Throwable {
+        doReturn( resource( SonarQualityGateResponses.ERROR_WITHOUT_CONDITIONS ) ).when( sonar ).find( RESOURCE_QUERY_CAPTOR.capture() );
+        try {
+            qualityGateService.validateQualityGate( sonar, DUMMY_PROJECT_KEY );
+            fail( "no error" );
+        }
+        catch ( final SonarQualityException e ) {
+            System.out.print( e.getLocalizedMessage() );
+            assertTrue( e.getLocalizedMessage().contains( "quality gate not met" ) );
+            assertFalse( e.getLocalizedMessage().toLowerCase().contains( "conditions".toLowerCase() ) );
+        }
+    }
+
+    @Test
+    public void noConditionsArrayInServerResponseOnError() throws Throwable {
+        doReturn( resource( SonarQualityGateResponses.ERROR_WITH_CONDITIONS_AS_NON_ARRAY ) ).when( sonar ).find( RESOURCE_QUERY_CAPTOR.capture() );
+        try {
+            qualityGateService.validateQualityGate( sonar, DUMMY_PROJECT_KEY );
+            fail( "no error" );
+        }
+        catch ( final SonarQualityException e ) {
+            System.out.print( e.getLocalizedMessage() );
+            assertTrue( e.getLocalizedMessage().contains( "quality gate not met" ) );
+            assertFalse( e.getLocalizedMessage().toLowerCase().contains( "conditions".toLowerCase() ) );
+        }
+    }
+
+    @Test
     public void invalidJson() throws Throwable {
         doReturn( resource( "{tsetdit = invalid json}" ) ).when( sonar ).find( RESOURCE_QUERY_CAPTOR.capture() );
         try {

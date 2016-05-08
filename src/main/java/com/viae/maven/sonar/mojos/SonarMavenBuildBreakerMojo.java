@@ -34,6 +34,12 @@ public class SonarMavenBuildBreakerMojo extends AbstractMojo {
 
     private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
+    /**
+     * Validate a project against a given quality gate.
+     *
+     * @throws MojoExecutionException, will not be thrown.
+     * @throws MojoFailureException, whll be thrown when the quality gate is not met by the given project.
+     */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         final Sonar sonar = Sonar.create(sonarServer, sonarUser, sonarPassword);

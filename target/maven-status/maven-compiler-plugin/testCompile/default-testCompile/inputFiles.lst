@@ -1,3 +1,8 @@
-D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\services\TestJsonUtil.java
+D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\GlobalSettings.java
+D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\exceptions\TestGitException.java
+D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\exceptions\TestSonarQualityException.java
+D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\mojos\TestSonarMavenGitBranchMojo.java
 D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\services\TestSonarQualityGateServiceImpl.java
 D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\services\SonarQualityGateResponses.java
+D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\services\TestGitServiceImpl.java
+D:\workspace_intelij\sonar-build-breaker-maven-plugin\src\test\java\com\viae\maven\sonar\utils\TestJsonUtil.java

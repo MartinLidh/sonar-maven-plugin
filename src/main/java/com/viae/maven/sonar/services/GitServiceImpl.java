@@ -22,6 +22,9 @@ public class GitServiceImpl implements GitService {
 
     private final Log log;
 
+    /**
+     * @param log, the logging service, can't be null.
+     */
     public GitServiceImpl(final Log log) {
         Validate.notNull(log, "log can't be null");
         this.log = log;
@@ -36,10 +39,10 @@ public class GitServiceImpl implements GitService {
 
             final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-            if(reader != null) {
-                sonarBranchName = reader.readLine();
-                if(StringUtils.isNotBlank(sonarBranchName)){
-                    sonarBranchName = sonarBranchName.trim();
+            if (reader != null) {
+                final String tempName = reader.readLine();
+                if (StringUtils.isNotEmpty(tempName)) {
+                    sonarBranchName = tempName.trim();
                 }
             }
             log.info(String.format("set sonar.branch [%s]", sonarBranchName));

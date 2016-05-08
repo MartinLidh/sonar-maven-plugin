@@ -9,6 +9,26 @@ package com.viae.maven.sonar.services;
 public class SonarQualityGateResponses {
 	public static final String OK = "{\"level\":\"OK\",\"conditions\":[]}";
 
+	public static final String ERROR_WITHOUT_CONDITIONS = "" +
+			"{\"level\":\"ERROR\"," +
+			"}" +
+			"";
+
+	public static final String ERROR_WITH_CONDITIONS_AS_NON_ARRAY = "" +
+			"{\"level\":\"ERROR\"," +
+			"\"conditions\":" +
+			"{  " +
+			"\"metric\":\"critical_violations\"," +
+			"\"op\":\"LT\"," +
+			"\"period\":3," +
+			"\"warning\":\"1\"," +
+			"\"error\":\"1\"," +
+			"\"actual\":\"0.0\"," +
+			"\"level\":\"ERROR\"" +
+			"}" +
+			"}" +
+			"";
+
 	public static final String CRITICAL_VIOLATIONS_TOO_HIGH = "" +
 			"{\"level\":\"ERROR\"," +
 			"\"conditions\":[" +

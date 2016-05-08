@@ -7,14 +7,12 @@ package com.viae.maven.sonar.services;
 import com.viae.maven.sonar.GlobalSettings;
 import com.viae.maven.sonar.exceptions.GitException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -24,6 +22,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 /**
+ * Tests for {@link GitServiceImpl}
+ *
  * Created by Vandeperre Maarten on 05/05/2016.
  */
 public class TestGitServiceImpl {
@@ -69,8 +69,9 @@ public class TestGitServiceImpl {
 
     @Test
     public void getGitBranchFornullProcessResponse() throws Throwable {
-        InputStream processOutput = new ByteArrayInputStream(null);
-        doReturn(processOutput).when(process).getInputStream();
+        InputStream is = mock(InputStream.class);
+        doReturn(-1).when(is).read(any(byte[].class), anyInt(), anyInt());
+        doReturn(is).when(process).getInputStream();
         assertThat(gitService.getBranchName(runtime), equalTo(""));
         verify(process, times(1)).waitFor();
     }

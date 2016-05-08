@@ -25,10 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SonarQualityGateServiceImpl implements SonarQualityGateService {
 
-    public static final String METRIC_QUALITY_GATE_DETAILS = "quality_gate_details";
-    public static final String LEVEL_ERROR = "ERROR";
-    public static final String FIELD_LEVEL = "level";
-    public static final String FIELD_CONDITIONS = "conditions";
+    private static final String METRIC_QUALITY_GATE_DETAILS = "quality_gate_details";
+    private static final String LEVEL_ERROR = "ERROR";
+    private static final String FIELD_LEVEL = "level";
+    private static final String FIELD_CONDITIONS = "conditions";
 
     @Override
     public void validateQualityGate(final Sonar sonar, final String projectKey) throws SonarQualityException {
@@ -47,8 +47,11 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
                     joiner.add("### quality gate not met ###");
                     joiner.add("############################");
                     joiner.add("############################");
-                    joiner.add("Conditions:");
-                    ((JSONArray) jsonObject.get(FIELD_CONDITIONS)).stream().forEach(condition -> joiner.add(condition.toString()));
+                    Object conditionsResponse = jsonObject.get(FIELD_CONDITIONS);
+                    if(conditionsResponse != null && conditionsResponse instanceof JSONArray) {
+                        joiner.add("Conditions:");
+                        ((JSONArray) conditionsResponse).stream().forEach(condition -> joiner.add(condition.toString()));
+                    }
                     throw new SonarQualityException(joiner.toString());
                 }
             }
@@ -64,7 +67,7 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
         String qualityGateJson = client.get(String.format("/api/qualitygates/show?name=%s", qualityGateName));
         String qualityGateId = JsonUtil.getIdOnMainLevel(qualityGateJson);
         if (StringUtils.isNotBlank(projectId) && StringUtils.isNotBlank(qualityGateId)) {
-            final Map<String, Object> map = new ConcurrentHashMap();
+            final Map<String, Object> map = new ConcurrentHashMap<>();
             map.put( "gateId", qualityGateId );
             map.put( "projectId", projectId );
             client.post( "/api/qualitygates/select", map );
