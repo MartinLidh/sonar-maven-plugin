@@ -1,0 +1,4 @@
+com.viae.maven.sonar.exceptions
+com.viae.maven.sonar.mojos
+com.viae.maven.sonar.services
+com.viae.maven.sonar.utils

@@ -1,0 +1,3 @@
+com\viae\maven\sonar\services\SonarQualityGateResponses.class
+com\viae\maven\sonar\services\TestJsonUtil.class
+com\viae\maven\sonar\services\TestSonarQualityGateServiceImpl.class

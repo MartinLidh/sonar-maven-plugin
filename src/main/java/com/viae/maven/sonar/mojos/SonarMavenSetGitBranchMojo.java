@@ -4,6 +4,9 @@
 
 package com.viae.maven.sonar.mojos;
 
+import com.viae.maven.sonar.exceptions.GitException;
+import com.viae.maven.sonar.services.GitService;
+import com.viae.maven.sonar.services.GitServiceImpl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -21,23 +24,17 @@ import java.io.InputStreamReader;
 @Mojo(name = "set-git-branch", aggregator = true)
 public class SonarMavenSetGitBranchMojo extends AbstractMojo {
 
-	@Component
-	protected MavenProject project;
+    @Component
+    protected MavenProject project;
+    private final GitService gitService = new GitServiceImpl(getLog());
 
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		try {
-			final Process p = Runtime.getRuntime().exec( "git rev-parse --abbrev-ref HEAD" );
-			p.waitFor();
-
-			final BufferedReader reader = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
-
-			String sonarBranchName = reader.readLine().trim();
-			getLog().info( String.format( "set sonar.branch [%s]", sonarBranchName ) );
-			project.getProperties().setProperty( "sonar.branch", sonarBranchName );
-		}
-		catch ( IOException | InterruptedException e ) {
-			throw new MojoExecutionException( e.getLocalizedMessage(), e );
-		}
-	}
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        try {
+            String sonarBranchName = gitService.getBranchName(Runtime.getRuntime());
+            project.getProperties().setProperty("sonar.branch", sonarBranchName);
+        } catch (GitException e) {
+            throw new MojoExecutionException(e.getLocalizedMessage(), e);
+        }
+    }
 }

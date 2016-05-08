@@ -2,17 +2,15 @@
  * Copyright (c) 2016 by VIAE (http///viae-it.com)
  */
 
-package com.viae.maven.sonar.services;
+package com.viae.maven.sonar.utils;
 
 import com.viae.maven.sonar.exceptions.SonarQualityException;
-import com.viae.maven.sonar.utils.JsonUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -28,10 +26,10 @@ public class TestJsonUtil {
         assertThat(JsonUtil.getIdOnMainLevel(happyPath), equalTo("22295"));
         assertThat(JsonUtil.getIdOnMainLevel(null), nullValue());
         assertThat(JsonUtil.getIdOnMainLevel(MEANINGLESS_JSON), nullValue());
-        try{
+        try {
             JsonUtil.getIdOnMainLevel(INVALID_JSON);
             fail("no error");
-        } catch(SonarQualityException e){
+        } catch (SonarQualityException e) {
             assertThat(e.getLocalizedMessage().contains("Unexpected character"), is(true));
         }
     }
