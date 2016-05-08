@@ -7,6 +7,7 @@ package com.viae.maven.sonar.mojos;
 import com.viae.maven.sonar.exceptions.GitException;
 import com.viae.maven.sonar.services.GitService;
 import com.viae.maven.sonar.services.GitServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -35,9 +36,10 @@ public class SonarMavenSetGitBranchMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            //TODO do not override sonar.branch if existing.
-            String sonarBranchName = gitService.getBranchName(Runtime.getRuntime());
-            project.getProperties().setProperty("sonar.branch", sonarBranchName);
+            if(StringUtils.isBlank(project.getProperties().getProperty("sonar.branch"))) {
+                String sonarBranchName = gitService.getBranchName(Runtime.getRuntime());
+                project.getProperties().setProperty("sonar.branch", sonarBranchName);
+            }
         } catch (GitException e) {
             throw new MojoExecutionException(e.getLocalizedMessage(), e);
         }

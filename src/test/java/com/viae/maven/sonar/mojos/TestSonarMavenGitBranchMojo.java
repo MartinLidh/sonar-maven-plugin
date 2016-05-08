@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -20,26 +22,26 @@ public class TestSonarMavenGitBranchMojo {
 
     private final SonarMavenSetGitBranchMojo mojo = new SonarMavenSetGitBranchMojo();
     private final MavenProject project = mock(MavenProject.class);
-    private final Properties properties = mock(Properties.class);
+    private Properties properties;
 
     @Before
-    public void setupFreshFixture(){
+    public void setupFreshFixture() {
         reset(project);
-        reset(properties);
         mojo.project = project;
+        properties = new Properties();
         doReturn(properties).when(project).getProperties();
     }
 
     @Test
     public void happyPath() throws Throwable {
         mojo.execute();
-        verify(properties, times(1)).setProperty("sonar.branch", GlobalSettings.BRANCH_NAME);
+        assertThat(properties.getProperty(GlobalSettings.SONAR_BRANCH_PROPERTY_NAME), equalTo(GlobalSettings.BRANCH_NAME));
     }
 
     @Test
     public void doNotOverrideSonarBranchProperty() throws Throwable {
-        //properties.
+        properties.setProperty(GlobalSettings.SONAR_BRANCH_PROPERTY_NAME, "test-property");
         mojo.execute();
-        verify(properties, times(1)).setProperty("sonar.branch", "test-property");
+        assertThat(properties.getProperty(GlobalSettings.SONAR_BRANCH_PROPERTY_NAME), equalTo("test-property"));
     }
 }
