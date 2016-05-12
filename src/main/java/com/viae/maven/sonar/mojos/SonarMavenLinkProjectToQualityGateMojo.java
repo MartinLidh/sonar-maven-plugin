@@ -4,6 +4,9 @@
 
 package com.viae.maven.sonar.mojos;
 
+import com.viae.maven.sonar.exceptions.SonarQualityException;
+import com.viae.maven.sonar.services.SonarQualityGateService;
+import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -23,28 +26,26 @@ public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
     protected String sonarServer;
     @Parameter(property = "sonar.projectKey", required = true)
     protected String sonarKey;
-    @Parameter(property = "sonar.branch")
-    protected String branchName;
     @Parameter(property = "sonar.login", required = true)
     protected String sonarUser;
     @Parameter(property = "sonar.password", required = true)
     protected String sonarPassword;
+    @Parameter(property = "sonar.qualitygate", required = true)
+    protected String qualityGateName;
+
+    private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         final SonarClient client = SonarClient.builder()
-                .url( "http://sonar.projects.foreach.be" )
-                .login( "admin" )
-                .password( "tmp1022!" )
+                .url(sonarServer)
+                .login(sonarUser)
+                .password(sonarPassword)
                 .build();
-        final Map<String, Object> map = new ConcurrentHashMap();
-        map.put( "gateId", "2" );
-        map.put( "projectId", "22295" );
-        String result = client.get( "/api/resources?format=json&resource=be.resto:user-module-project:master" );
-        //{"id":22295,"key":"be.resto:user-module-project:master","name":"be.resto:user-module-project master","scope":"PRJ","qualifier":"TRK","date":"2016-05-03T14:04:45+0200","creationDate":"2016-05-02T16:32:23+0200","lname":"be.resto:user-module-project master","version":"0.0.1-SNAPSHOT","branch":"master","description":""}]
-        client.post( "/api/qualitygates/select", map );
-        result = client.get( "/api/qualitygates/show?name=NgQualityGate" );
-        //{"id":2,"name":"NgQualityGate","conditions":[{"id":9,"metric":"new_coverage","op":"LT","warning":"","error":"90","period":3}]}
-        System.out.println( "..." + result ); // no result
+        try {
+            qualityGateService.linkQualityGateToProject(client, sonarKey, qualityGateName);
+        } catch (SonarQualityException e) {
+            throw new MojoExecutionException(e.getLocalizedMessage(), e);
+        }
     }
 }

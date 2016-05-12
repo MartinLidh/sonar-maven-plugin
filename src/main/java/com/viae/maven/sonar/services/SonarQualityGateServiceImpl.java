@@ -7,6 +7,7 @@ package com.viae.maven.sonar.services;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -50,7 +51,7 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
                     Object conditionsResponse = jsonObject.get(FIELD_CONDITIONS);
                     if(conditionsResponse != null && conditionsResponse instanceof JSONArray) {
                         joiner.add("Conditions:");
-                        ((JSONArray) conditionsResponse).stream().forEach(condition -> joiner.add(condition.toString()));
+                        ((JSONArray) conditionsResponse).forEach(condition -> joiner.add(condition.toString()));
                     }
                     throw new SonarQualityException(joiner.toString());
                 }
@@ -62,6 +63,10 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
 
     @Override
     public void linkQualityGateToProject(SonarClient client, String projectKey, String qualityGateName) throws SonarQualityException {
+        Validate.notNull(client, "The given Sonar client can't be null");
+        Validate.notBlank(projectKey, "The given project key can't be null");
+        Validate.notBlank(qualityGateName, "The given quality gate name can't be null");
+
         String projectIdJson = client.get(String.format("/api/resources?format=json&resource=%s", projectKey));
         String projectId = JsonUtil.getIdOnMainLevel(projectIdJson);
         String qualityGateJson = client.get(String.format("/api/qualitygates/show?name=%s", qualityGateName));

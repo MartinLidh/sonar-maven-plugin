@@ -123,6 +123,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <goalPrefix>sonar</goalPrefix>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
             </plugin>

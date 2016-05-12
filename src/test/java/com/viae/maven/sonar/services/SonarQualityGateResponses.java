@@ -44,24 +44,12 @@ public class SonarQualityGateResponses {
 			"]" +
 			"}" +
 			"";
-}
+	
+	public static final String PROJECT_DETAIL = "{\"id\":22295,\"key\":\"test.package:sample-project:master\",\"name\":\"test.package:sample-project master\",\"scope\":\"PRJ\",\"qualifier\":\"TRK\",\"date\":\"2016-05-03T14:04:45+0200\",\"creationDate\":\"2016-05-02T16:32:23+0200\",\"lname\":\"test.package:sample-project master\",\"version\":\"0.0.1-SNAPSHOT\",\"branch\":\"master\",\"description\":\"\"}";
 
-/*
-<build>
-    <plugins>
-        <plugin>
-            <groupId>com.viae.maven</groupId>
-            <artifactId>sonar-build-braker-maven-plugin</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <configuration>
-                <sonarServer>http://sonar.projects.foreach.be/</sonarServer>
-                <!--sonarKey>be.realinvestor:investor-modules</sonarKey-->
-                <!--branchName>feature/SONAR-TEST-2</branchName-->
-                <sonarKey>be.realinvestor:investor-modules:feature/SONAR-TEST-2</sonarKey>
-                <sonarUser>buildserver</sonarUser>
-                <sonarPassword>buildserver</sonarPassword>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
- */
+	public static final String PROJECT_DETAIL_AS_LIST = "[{\"id\":22295,\"key\":\"test.package:sample-project:master\",\"name\":\"test.package:sample-project master\",\"scope\":\"PRJ\",\"qualifier\":\"TRK\",\"date\":\"2016-05-03T14:04:45+0200\",\"creationDate\":\"2016-05-02T16:32:23+0200\",\"lname\":\"test.package:sample-project master\",\"version\":\"0.0.1-SNAPSHOT\",\"branch\":\"master\",\"description\":\"\"}]";
+
+	public static final String QUALITY_GATE_DETAIL = "{\"id\":2,\"name\":\"SampleQualityGate\",\"conditions\":[{\"id\":9,\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"90\",\"period\":3}]}";
+
+	public static final String QUALITY_GATE_DETAIL_AS_LIST = "[{\"id\":2,\"name\":\"SampleQualityGate\",\"conditions\":[{\"id\":9,\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"90\",\"period\":3}]}]";
+}

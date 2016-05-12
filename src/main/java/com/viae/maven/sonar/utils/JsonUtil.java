@@ -6,6 +6,7 @@ package com.viae.maven.sonar.utils;
 
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -29,7 +30,8 @@ public class JsonUtil {
 
     private static final JSONObject parse(final String json) throws SonarQualityException {
         try {
-            return (JSONObject) jsonParser.parse(json);
+            Object jsonObject = jsonParser.parse(json);
+            return jsonObject instanceof JSONObject ? (JSONObject) jsonObject : (JSONObject) ((JSONArray) jsonObject).get(0);
         } catch (ParseException e) {
             throw new SonarQualityException(e);
         }
