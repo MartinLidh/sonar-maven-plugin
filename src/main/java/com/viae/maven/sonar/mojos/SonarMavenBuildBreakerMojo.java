@@ -4,6 +4,7 @@
 
 package com.viae.maven.sonar.mojos;
 
+import com.viae.maven.sonar.config.SonarPropertyNames;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
@@ -12,7 +13,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.sonar.wsclient.Sonar;
+import org.sonar.wsclient.SonarClient;
 
 /**
  * MOJO to validate a project against a given quality gate.
@@ -21,16 +22,18 @@ import org.sonar.wsclient.Sonar;
  */
 @Mojo(name = "validate-qualitygate", aggregator = true)
 public class SonarMavenBuildBreakerMojo extends AbstractMojo {
-    @Parameter(property = "sonarServer", required = true)
+    @Parameter(property = SonarPropertyNames.SERVER, required = true)
     protected String sonarServer;
-    @Parameter(property = "sonar.projectKey", required = true)
+    @Parameter(property = SonarPropertyNames.PROJECT_KEY, required = true)
     protected String sonarKey;
-    @Parameter(property = "sonar.branch")
+    @Parameter(property = SonarPropertyNames.BRANCH)
     protected String branchName;
-    @Parameter(property = "sonar.login", required = true)
+    @Parameter(property = SonarPropertyNames.LOGIN, required = true)
     protected String sonarUser;
-    @Parameter(property = "sonar.password", required = true)
+    @Parameter(property = SonarPropertyNames.PASSWORD, required = true)
     protected String sonarPassword;
+    @Parameter(property = SonarPropertyNames.EXECUTION_START)
+    protected String sonarExecutionStart;
 
     private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
@@ -42,11 +45,16 @@ public class SonarMavenBuildBreakerMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        final Sonar sonar = Sonar.create(sonarServer, sonarUser, sonarPassword);
+        final SonarClient client = SonarClient.builder()
+                                              .url( sonarServer )
+                                              .login( sonarUser )
+                                              .password( sonarPassword )
+                                              .build();
         try {
             getLog().info(String.format("validate quality gate for projectKey[%s] and branch [%s]", sonarKey, branchName));
-            qualityGateService.validateQualityGate(sonar, qualityGateService.composeSonarProjectKey(sonarKey, branchName));
-        } catch (SonarQualityException e) {
+            qualityGateService.validateQualityGate( client, qualityGateService.composeSonarProjectKey( sonarKey, branchName ) );
+        }
+        catch ( final SonarQualityException e ) {
             throw new MojoFailureException(e.getLocalizedMessage(), e);
         }
     }

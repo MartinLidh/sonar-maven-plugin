@@ -17,10 +17,13 @@ import org.json.simple.parser.ParseException;
 public class JsonUtil {
     private static final JSONParser jsonParser = new JSONParser();
 
+    private JsonUtil() {
+    }
+
     public static final String getIdOnMainLevel(final String qualityGateDetailJson) throws SonarQualityException {
         String id = null;
         if (StringUtils.isNotBlank(qualityGateDetailJson)) {
-            JSONObject json = parse(qualityGateDetailJson);
+            final JSONObject json = parse( qualityGateDetailJson );
             if (json.containsKey("id")) {
                 id = json.get("id").toString();
             }
@@ -28,11 +31,23 @@ public class JsonUtil {
         return id;
     }
 
-    private static final JSONObject parse(final String json) throws SonarQualityException {
+    public static final String getOnMainLevel( final String qualityGateDetailJson, final String fieldName ) throws SonarQualityException {
+        String id = null;
+        if ( StringUtils.isNotBlank( qualityGateDetailJson ) ) {
+            final JSONObject json = parse( qualityGateDetailJson );
+            if ( json.containsKey( fieldName ) ) {
+                id = json.get( fieldName ).toString();
+            }
+        }
+        return id;
+    }
+
+    private static JSONObject parse( final String json ) throws SonarQualityException {
         try {
-            Object jsonObject = jsonParser.parse(json);
+            final Object jsonObject = jsonParser.parse( json );
             return jsonObject instanceof JSONObject ? (JSONObject) jsonObject : (JSONObject) ((JSONArray) jsonObject).get(0);
-        } catch (ParseException e) {
+        }
+        catch ( final ParseException e ) {
             throw new SonarQualityException(e);
         }
     }

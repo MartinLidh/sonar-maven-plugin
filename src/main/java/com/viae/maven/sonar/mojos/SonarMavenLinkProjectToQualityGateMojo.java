@@ -4,6 +4,7 @@
 
 package com.viae.maven.sonar.mojos;
 
+import com.viae.maven.sonar.config.SonarPropertyNames;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
@@ -14,24 +15,23 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.sonar.wsclient.SonarClient;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Created by Vandeperre Maarten on 03/05/2016.
  */
 @Mojo(name = "link-project-to-qualitygate", aggregator = true)
 public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
-    @Parameter(property = "sonarServer", required = true)
+    @Parameter(property = SonarPropertyNames.SERVER, required = true)
     protected String sonarServer;
-    @Parameter(property = "sonar.projectKey", required = true)
+    @Parameter(property = SonarPropertyNames.PROJECT_KEY, required = true)
     protected String sonarKey;
-    @Parameter(property = "sonar.login", required = true)
+    @Parameter(property = SonarPropertyNames.LOGIN, required = true)
     protected String sonarUser;
-    @Parameter(property = "sonar.password", required = true)
+    @Parameter(property = SonarPropertyNames.PASSWORD, required = true)
     protected String sonarPassword;
-    @Parameter(property = "sonar.qualitygate", required = true)
+    @Parameter(property = SonarPropertyNames.QUALITY_GATE, required = true)
     protected String qualityGateName;
+    @Parameter(property = SonarPropertyNames.BRANCH)
+    protected String branchName;
 
     private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
@@ -43,8 +43,9 @@ public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
                 .password(sonarPassword)
                 .build();
         try {
-            qualityGateService.linkQualityGateToProject(client, sonarKey, qualityGateName);
-        } catch (SonarQualityException e) {
+            qualityGateService.linkQualityGateToProject( client, qualityGateService.composeSonarProjectKey( sonarKey, branchName ), qualityGateName );
+        }
+        catch ( final SonarQualityException e ) {
             throw new MojoExecutionException(e.getLocalizedMessage(), e);
         }
     }
