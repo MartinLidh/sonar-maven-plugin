@@ -31,8 +31,8 @@ public class SonarMavenSetGitBranchMojo extends AbstractMojo {
 
     /**
      * Set the sonar.branch property to the git branch name (if the property is not defined).
-     * @throws MojoExecutionException, will be thrown when something goes wrong while retrieving the git branch name.
-     * @throws MojoFailureException, will not be thrown
+     * @throws MojoExecutionException will be thrown when something goes wrong while retrieving the git branch name.
+     * @throws MojoFailureException will not be thrown
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
