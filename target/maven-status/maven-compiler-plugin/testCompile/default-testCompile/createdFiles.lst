@@ -1,8 +1,12 @@
 com\viae\maven\sonar\services\SonarQualityGateResponses.class
 com\viae\maven\sonar\exceptions\TestSonarQualityException.class
+com\viae\maven\sonar\config\TestSonarPropertyNames.class
 com\viae\maven\sonar\mojos\TestSonarMavenGitBranchMojo.class
 com\viae\maven\sonar\services\TestSonarQualityGateServiceImpl.class
+com\viae\maven\sonar\mojos\TestSonarMavenBuildBreakerMojo.class
 com\viae\maven\sonar\exceptions\TestGitException.class
+com\viae\maven\sonar\mojos\TestSonarMavenInitSonarExecutionStartMojo.class
 com\viae\maven\sonar\GlobalSettings.class
 com\viae\maven\sonar\utils\TestJsonUtil.class
+com\viae\maven\sonar\mojos\TestSonarMavenLinkProjectToQualityGateMojo.class
 com\viae\maven\sonar\services\TestGitServiceImpl.class

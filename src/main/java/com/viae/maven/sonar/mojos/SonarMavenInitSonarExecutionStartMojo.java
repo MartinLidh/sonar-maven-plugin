@@ -4,7 +4,7 @@
 
 package com.viae.maven.sonar.mojos;
 
-import com.viae.maven.sonar.config.SonarPropertyNames;
+import com.viae.maven.sonar.config.SonarStrings;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
@@ -19,27 +19,28 @@ import org.apache.maven.project.MavenProject;
 import org.sonar.wsclient.SonarClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Mojo to set the sonar.execution.start property to the last run timestamp.
  * <p>
  * Created by Vandeperre Maarten on 29/04/2016.
  */
-@Mojo(name = "init-sonar-execution-start", aggregator = true)
+@Mojo(name = SonarStrings.MOJO_NAME_SET_EXECUTION_START, aggregator = true)
 public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 
 	@Component
 	protected MavenProject project;
 
-	@Parameter(property = SonarPropertyNames.SERVER, required = true)
+	@Parameter(property = SonarStrings.SERVER, required = true)
 	protected String sonarServer;
-	@Parameter(property = SonarPropertyNames.PROJECT_KEY, required = true)
+	@Parameter(property = SonarStrings.PROJECT_KEY, required = true)
 	protected String sonarKey;
-	@Parameter(property = SonarPropertyNames.LOGIN, required = true)
+	@Parameter(property = SonarStrings.LOGIN, required = true)
 	protected String sonarUser;
-	@Parameter(property = SonarPropertyNames.PASSWORD, required = true)
+	@Parameter(property = SonarStrings.PASSWORD, required = true)
 	protected String sonarPassword;
-	@Parameter(property = SonarPropertyNames.BRANCH)
+	@Parameter(property = SonarStrings.BRANCH)
 	protected String branchName;
 
 	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
@@ -49,7 +50,12 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 	 */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if ( StringUtils.isBlank( project.getProperties().getProperty( SonarPropertyNames.EXECUTION_START ) ) ) {
+		getLog().info( String.format( "%s start execution of '%s'", SonarStrings.LOG_PREFIX, SonarStrings.MOJO_NAME_SET_EXECUTION_START ) );
+		getLog().info( String.format( "%s use sonar server '%s' and log in with user '%s'", SonarStrings.LOG_PREFIX, sonarServer, sonarUser ) );
+		final String existingExecutionStart = project.getProperties().getProperty( SonarStrings.EXECUTION_START );
+
+		getLog().info( String.format( "%s existing %s: '%s'", SonarStrings.LOG_PREFIX, SonarStrings.EXECUTION_START, existingExecutionStart ) );
+		if ( StringUtils.isBlank( existingExecutionStart ) ) {
 			try {
 				final SonarClient client = SonarClient.builder()
 				                                      .url( sonarServer )
@@ -58,11 +64,16 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 				                                      .build();
 				final LocalDateTime lastRunTimeStamp =
 						qualityGateService.getLastRunTimeStamp( client, qualityGateService.composeSonarProjectKey( sonarKey, branchName ) );
+
+				getLog().info( String.format( "%s last run timestamp (i.e. from sonar): '%s'", SonarStrings.LOG_PREFIX, lastRunTimeStamp ) );
 				final LocalDateTime executionStart = lastRunTimeStamp != null ? lastRunTimeStamp : LocalDateTime.now();
-				project.getProperties().setProperty( SonarPropertyNames.EXECUTION_START, String.valueOf( executionStart.getNano() ) );
+				final String executionStartValue = String.valueOf( DateTimeFormatter.ISO_DATE_TIME.format( executionStart ) );
+				getLog().info( String.format( "%s set property '%s' to '%s'", SonarStrings.LOG_PREFIX, SonarStrings.EXECUTION_START, executionStartValue ) );
+				project.getProperties().setProperty( SonarStrings.EXECUTION_START, executionStartValue );
 			}
 			catch ( final SonarQualityException e ) {
-				throw new MojoFailureException( e.getLocalizedMessage(), e );
+				getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
+				throw new MojoExecutionException( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ), e );
 			}
 		}
 	}

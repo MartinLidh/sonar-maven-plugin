@@ -4,6 +4,7 @@
 
 package com.viae.maven.sonar.mojos;
 
+import com.viae.maven.sonar.config.SonarStrings;
 import com.viae.maven.sonar.exceptions.GitException;
 import com.viae.maven.sonar.services.GitService;
 import com.viae.maven.sonar.services.GitServiceImpl;
@@ -20,7 +21,7 @@ import org.apache.maven.project.MavenProject;
  *
  * Created by Vandeperre Maarten on 29/04/2016.
  */
-@Mojo(name = "set-git-branch", aggregator = true)
+@Mojo(name = SonarStrings.MOJO_NAME_SET_GIT_BRANCH, aggregator = true)
 public class SonarMavenSetGitBranchMojo extends AbstractMojo {
 
     @Component
@@ -35,13 +36,19 @@ public class SonarMavenSetGitBranchMojo extends AbstractMojo {
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        getLog().info( String.format( "%s start execution of '%s'", SonarStrings.LOG_PREFIX, SonarStrings.MOJO_NAME_SET_GIT_BRANCH ) );
         try {
-            if(StringUtils.isBlank(project.getProperties().getProperty("sonar.branch"))) {
-                String sonarBranchName = gitService.getBranchName(Runtime.getRuntime());
-                project.getProperties().setProperty("sonar.branch", sonarBranchName);
+            final String existingBranchValue = project.getProperties().getProperty( SonarStrings.BRANCH );
+            getLog().info( String.format( "%s existing %s: '%s'", SonarStrings.LOG_PREFIX, SonarStrings.BRANCH, existingBranchValue ) );
+            if ( StringUtils.isBlank( existingBranchValue ) ) {
+                final String sonarBranchName = gitService.getBranchName( Runtime.getRuntime() );
+                getLog().info( String.format( "%s set property '%s' to '%s'", SonarStrings.LOG_PREFIX, SonarStrings.BRANCH, sonarBranchName ) );
+                project.getProperties().setProperty( SonarStrings.BRANCH, sonarBranchName );
             }
-        } catch (GitException e) {
-            throw new MojoExecutionException(e.getLocalizedMessage(), e);
+        }
+        catch ( final GitException e ) {
+            getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
+            throw new MojoExecutionException( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ), e );
         }
     }
 }

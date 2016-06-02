@@ -14,7 +14,7 @@ public class TestSonarPropertyNames {
 
 	@Test
 	public void testConstructorIsPrivate() throws Throwable {
-		final Constructor<SonarPropertyNames> constructor = SonarPropertyNames.class.getDeclaredConstructor();
+		final Constructor<SonarStrings> constructor = SonarStrings.class.getDeclaredConstructor();
 		assertTrue( Modifier.isPrivate( constructor.getModifiers() ) );
 		constructor.setAccessible( true );
 		constructor.newInstance();

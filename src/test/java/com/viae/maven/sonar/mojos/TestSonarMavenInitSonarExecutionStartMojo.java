@@ -11,6 +11,7 @@ import org.sonar.wsclient.SonarClient;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -54,13 +55,13 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 	@Test
 	public void setTimeStampWithoutLastRunTimestamp() throws Throwable {
 		assertEquals( "guard assertion", null, project.getProperties().get( KEY ) );
-		final int before = LocalDateTime.now().getNano();
+		final LocalDateTime before = LocalDateTime.now().minusSeconds( 1 );
 		doReturn( null ).when( service ).getLastRunTimeStamp( any( SonarClient.class), anyString() );
 		mojo.execute();
-		final int after = LocalDateTime.now().getNano();
+		final LocalDateTime after = LocalDateTime.now().plusSeconds( 1 );
 		final String startTimeString = (String) project.getProperties().get( KEY );
-		assertTrue( before + " <= " + startTimeString, before <= Integer.parseInt( startTimeString ) );
-		assertTrue( after + " >= " + startTimeString, after >= Integer.parseInt( startTimeString ) );
+		assertTrue( before + " <= " + startTimeString, before.isBefore( LocalDateTime.parse( startTimeString, DateTimeFormatter.ISO_DATE_TIME ) ) );
+		assertTrue( after + " >= " + startTimeString, after.isAfter( LocalDateTime.parse( startTimeString, DateTimeFormatter.ISO_DATE_TIME ) ) );
 	}
 
 	@Test
@@ -70,16 +71,16 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 		doReturn( first ).when( service ).getLastRunTimeStamp( any( SonarClient.class), anyString() );
 		mojo.execute();
 		final String startTimeString = (String) project.getProperties().get( KEY );
-		assertEquals( first.getNano(), Integer.parseInt( startTimeString ) );
+		assertEquals( DateTimeFormatter.ISO_DATE_TIME.format( first ), startTimeString );
 	}
 
 	@Test
 	public void keepTimeStamp() throws Throwable {
-		final int original = 50;
+		final LocalDateTime original = LocalDateTime.now();
 		project.getProperties().setProperty( "sonar.execution.start", String.valueOf( original ) );
 		assertEquals( "guard assertion", String.valueOf( original ), project.getProperties().get( KEY ) );
 		mojo.execute();
 		final String startTimeString = (String) project.getProperties().get( KEY );
-		assertEquals( original, Integer.parseInt( startTimeString ) );
+		assertEquals( DateTimeFormatter.ISO_DATE_TIME.format( original ), startTimeString );
 	}
 }
