@@ -154,7 +154,7 @@ All the output is prefixed by 'VIAE log', so you can filter on this to see what'
 			<plugin>
 				<groupId>com.viae-it.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>1.0.2</version>
+				<version>LATEST</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
