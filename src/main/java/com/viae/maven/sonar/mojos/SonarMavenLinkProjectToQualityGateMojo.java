@@ -11,8 +11,10 @@ import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.sonar.wsclient.SonarClient;
 
 /**
@@ -22,7 +24,7 @@ import org.sonar.wsclient.SonarClient;
 public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
 	@Parameter(property = SonarStrings.SERVER, required = true)
 	protected String sonarServer;
-	@Parameter(property = SonarStrings.PROJECT_KEY, required = true)
+	@Parameter(property = SonarStrings.PROJECT_KEY)
 	protected String sonarKey;
 	@Parameter(property = SonarStrings.LOGIN, required = true)
 	protected String sonarUser;
@@ -33,11 +35,11 @@ public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
 	@Parameter(property = SonarStrings.BRANCH)
 	protected String branchName;
 
+	@Component
+	protected MavenProject project;
+
 	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
-	//TODO
-	//    Administer Quality Profiles and Gates
-//    Ability to perform any action on the quality profiles and gates.
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info( String.format( "%s start execution of '%s'", SonarStrings.LOG_PREFIX, SonarStrings.MOJO_NAME_LINK_QUALITY_GATE ) );
@@ -49,7 +51,7 @@ public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
 			                                      .password( sonarPassword )
 			                                      .build();
 
-			final String projectKey = qualityGateService.composeSonarProjectKey( sonarKey, branchName );
+			final String projectKey = qualityGateService.composeSonarProjectKey( project, sonarKey, branchName );
 			getLog().info( String.format( "%s property '%s': %s", SonarStrings.LOG_PREFIX, SonarStrings.LOGIN, sonarUser ) );
 			final int passwordLength = sonarPassword != null ? sonarPassword.length() : 0;
 			getLog().info( String.format( "%s property length '%s': %s", SonarStrings.LOG_PREFIX, SonarStrings.PASSWORD, passwordLength ) );

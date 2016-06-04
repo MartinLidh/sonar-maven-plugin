@@ -29,12 +29,9 @@ import java.time.format.DateTimeFormatter;
 @Mojo(name = SonarStrings.MOJO_NAME_SET_EXECUTION_START, aggregator = true)
 public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 
-	@Component
-	protected MavenProject project;
-
 	@Parameter(property = SonarStrings.SERVER, required = true)
 	protected String sonarServer;
-	@Parameter(property = SonarStrings.PROJECT_KEY, required = true)
+	@Parameter(property = SonarStrings.PROJECT_KEY)
 	protected String sonarKey;
 	@Parameter(property = SonarStrings.LOGIN, required = true)
 	protected String sonarUser;
@@ -42,6 +39,9 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 	protected String sonarPassword;
 	@Parameter(property = SonarStrings.BRANCH)
 	protected String branchName;
+
+	@Component
+	protected MavenProject project;
 
 	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
@@ -63,7 +63,7 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 				                                      .password( sonarPassword )
 				                                      .build();
 				final LocalDateTime lastRunTimeStamp =
-						qualityGateService.getLastRunTimeStamp( client, qualityGateService.composeSonarProjectKey( sonarKey, branchName ) );
+						qualityGateService.getLastRunTimeStamp( client, qualityGateService.composeSonarProjectKey( project, sonarKey, branchName ) );
 
 				getLog().info( String.format( "%s last run timestamp (i.e. from sonar): '%s'", SonarStrings.LOG_PREFIX, lastRunTimeStamp ) );
 				final LocalDateTime executionStart = lastRunTimeStamp != null ? lastRunTimeStamp : LocalDateTime.now();

@@ -1,6 +1,8 @@
 package com.viae.maven.sonar.mojos;
 
+import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +18,11 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 /**
  * Tests for {@link SonarMavenInitSonarExecutionStartMojo}
@@ -47,7 +51,7 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 		mojo.sonarKey = KEY;
 		properties = new Properties();
 		doReturn( properties ).when( project ).getProperties();
-		Field serviceField = SonarMavenInitSonarExecutionStartMojo.class.getDeclaredField( "qualityGateService" );
+		final Field serviceField = SonarMavenInitSonarExecutionStartMojo.class.getDeclaredField( "qualityGateService" );
 		serviceField.setAccessible( true );
 		serviceField.set(mojo, service);
 	}
@@ -82,5 +86,17 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 		mojo.execute();
 		final String startTimeString = (String) project.getProperties().get( KEY );
 		assertEquals( DateTimeFormatter.ISO_DATE_TIME.format( original ), startTimeString );
+	}
+
+	@Test
+	public void setTimeStampWithException() throws Throwable {
+		doThrow( new SonarQualityException( "error" ) ).when( service ).getLastRunTimeStamp( any( SonarClient.class ), anyString() );
+		try {
+			mojo.execute();
+			fail( "no error" );
+		}
+		catch ( final MojoExecutionException e ) {
+			assertTrue( e.getLocalizedMessage(), e.getLocalizedMessage().contains( "error" ) );
+		}
 	}
 }

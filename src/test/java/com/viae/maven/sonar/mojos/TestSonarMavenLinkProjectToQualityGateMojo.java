@@ -48,7 +48,7 @@ public class TestSonarMavenLinkProjectToQualityGateMojo {
 		field.set( mojo, service );
 
 		doNothing().when( service ).linkQualityGateToProject( any( SonarClient.class ), anyString(), anyString() );
-		doReturn( mojo.sonarKey ).when( service ).composeSonarProjectKey( mojo.sonarKey, null );
+		doReturn( mojo.sonarKey ).when( service ).composeSonarProjectKey( null, mojo.sonarKey, null );
 		mojo.execute();
 		verify( service ).linkQualityGateToProject( any( SonarClient.class ), sonarKeyCaptor.capture(), qualityGateCaptor.capture() );
 		assertThat( sonarKeyCaptor.getValue(), equalTo( "sonarKey" ) );

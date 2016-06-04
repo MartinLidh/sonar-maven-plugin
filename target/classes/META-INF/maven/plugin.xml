@@ -7,7 +7,7 @@
   <description>This plugin will make maven interact with SONAR.</description>
   <groupId>com.viae-it.maven</groupId>
   <artifactId>sonar-maven-plugin</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2</version>
   <goalPrefix>sonar</goalPrefix>
   <isolatedRealm>false</isolatedRealm>
   <inheritedByDefault>true</inheritedByDefault>

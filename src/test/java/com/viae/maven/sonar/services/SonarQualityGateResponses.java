@@ -55,29 +55,27 @@ public class SonarQualityGateResponses {
 
 	public static final String QUALITY_GATE_DETAIL_AS_LIST = "[{\"id\":2,\"name\":\"SampleQualityGate\",\"conditions\":[{\"id\":9,\"metric\":\"new_coverage\",\"op\":\"LT\",\"warning\":\"\",\"error\":\"90\",\"period\":3}]}]";
 
-	public static final String QUALITY_GATE_REPONSE( final LocalDateTime lastRunTimeStamp ) {
-		return String.format( "" +
+	public static final String QUALITY_GATE_REPONSE = "" +
 				                      "[" +
 				                      "	{" +
-				                      "		id: 20035," +
-				                      "		key: \"be.realinvestor:investor-modules:feature/SONAR-TEST-2\"," +
-				                      "		name: \"investor-modules feature/SONAR-TEST-2\"," +
-				                      "		scope: \"PRJ\"," +
-				                      "		qualifier: \"TRK\"," +
-				                      "		date: \"2016-04-29T08:09:22+0200\"," +
-				                      "		creationDate: \"%s\"," +
-				                      "		lname: \"investor-modules feature/SONAR-TEST-2\"," +
-				                      "		version: \"1.0-SNAPSHOT\"," +
-				                      "		branch: \"feature/SONAR-TEST-2\"," +
-				                      "		description: \"\"," +
-				                      "		msr: [" +
+				                      "		\"id\": 20035," +
+				                      "		\"key\": \"be.realinvestor:investor-modules:feature/SONAR-TEST-2\"," +
+				                      "		\"name\": \"investor-modules feature/SONAR-TEST-2\"," +
+				                      "		\"scope\": \"PRJ\"," +
+				                      "		\"qualifier\": \"TRK\"," +
+				                      "		\"date\": \"2016-04-29T08:09:22+0200\"," +
+				                      "		\"creationDate\": \"2016-04-29T08:09:22+0200\"," +
+				                      "		\"lname\": \"investor-modules feature/SONAR-TEST-2\"," +
+				                      "		\"version\": \"1.0-SNAPSHOT\"," +
+				                      "		\"branch\": \"feature/SONAR-TEST-2\"," +
+				                      "		\"description\": \"\"," +
+				                      "		\"msr\": [" +
 				                      "			{" +
-				                      "				key: \"quality_gate_details\"," +
-				                      "				data: \"{\"level\":\"OK\",\"conditions\":[]}\"" +
+				                      "				\"key\": \"quality_gate_details\"," +
+				                      "				\"data\": {\"level\":\"OK\",\"conditions\":[]}" +
 				                      "			}" +
 				                      "		]" +
 				                      "	}" +
 				                      "]" +
-				                      "", SonarQualityGateService.DATE_TIME_FORMATTER.format( lastRunTimeStamp ) );
-	}
+				                      "";
 }

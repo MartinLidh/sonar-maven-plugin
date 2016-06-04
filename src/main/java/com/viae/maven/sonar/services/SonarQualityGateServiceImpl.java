@@ -8,6 +8,7 @@ import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.maven.project.MavenProject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,7 +17,6 @@ import org.sonar.wsclient.SonarClient;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +41,7 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
         handleQualityGateState( client, projectKey );
     }
 
-    protected final void handleQualityGateState( final SonarClient client, final String projectKey ) throws SonarQualityException {
+    public void handleQualityGateState( final SonarClient client, final String projectKey ) throws SonarQualityException {
         Validate.notNull( client, "The given sonar client can't be null" );
         Validate.notBlank( projectKey, "The given project key can't be blank" );
 
@@ -135,8 +135,8 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
     }
 
     @Override
-    public String composeSonarProjectKey(final String projectKey, final String branchName) {
-        String resultingKey = null;
+    public String composeSonarProjectKey( final MavenProject project, final String projectKey, final String branchName ) {
+        String resultingKey = String.format( "%s:%s", project.getGroupId(), project.getArtifactId() );
         if (projectKey != null) {
             resultingKey = projectKey;
             if (StringUtils.isNotBlank(branchName)) {

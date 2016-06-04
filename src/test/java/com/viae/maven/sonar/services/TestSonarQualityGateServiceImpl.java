@@ -6,6 +6,7 @@ package com.viae.maven.sonar.services;
 
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -112,9 +113,13 @@ public class TestSonarQualityGateServiceImpl {
 
 	@Test
 	public void composeProjectKey() throws Throwable {
-		assertThat( qualityGateService.composeSonarProjectKey( null, DUMMY_BRANCH_NAME ), equalTo( null ) );
-		assertThat( qualityGateService.composeSonarProjectKey( DUMMY_PROJECT_KEY, null ), equalTo( DUMMY_PROJECT_KEY ) );
-		assertThat( qualityGateService.composeSonarProjectKey( DUMMY_PROJECT_KEY, DUMMY_BRANCH_NAME ), equalTo( DUMMY_PROJECT_KEY + ":" + DUMMY_BRANCH_NAME ) );
+		final MavenProject project = new MavenProject();
+		project.setGroupId( "groupId" );
+		project.setArtifactId( "artifactId" );
+		assertThat( qualityGateService.composeSonarProjectKey( project, null, DUMMY_BRANCH_NAME ), equalTo( "groupId:artifactId" ) );
+		assertThat( qualityGateService.composeSonarProjectKey( project, DUMMY_PROJECT_KEY, null ), equalTo( DUMMY_PROJECT_KEY ) );
+		assertThat( qualityGateService.composeSonarProjectKey( project, DUMMY_PROJECT_KEY, DUMMY_BRANCH_NAME ),
+		            equalTo( DUMMY_PROJECT_KEY + ":" + DUMMY_BRANCH_NAME ) );
 	}
 
 	@Test
@@ -245,6 +250,43 @@ public class TestSonarQualityGateServiceImpl {
 		final long duration = Duration.between( start, end ).getSeconds();
 
 		assertTrue( String.valueOf( duration ), duration == 3 );
+	}
+
+	@Test
+	public void getLastRunTimeStampWithNullSonarClient() throws Throwable {
+		try {
+			qualityGateService.getLastRunTimeStamp( null, RandomStringUtils.randomAlphabetic( 5 ) );
+			fail( "no error" );
+		}
+		catch ( final NullPointerException e ) {
+			assertTrue( e.getLocalizedMessage(), e.getLocalizedMessage().contains( "Sonar client" ) );
+		}
+	}
+
+	@Test
+	public void getLastRunTimeStampWithNullProjectKey() throws Throwable {
+		try {
+			qualityGateService.getLastRunTimeStamp( client, null );
+			fail( "no error" );
+		}
+		catch ( final NullPointerException e ) {
+			assertTrue( e.getLocalizedMessage(), e.getLocalizedMessage().contains( "project key" ) );
+		}
+	}
+
+	@Test
+	public void getLastRunTimeStampWithBlankResponse() throws Throwable {
+		doReturn( null ).when( client ).get( "/api/resources?format=json&resource=DUMMY_PROJECT_KEY" );
+		assertThat( qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY ), equalTo( null ) );
+		doReturn( "" ).when( client ).get( "/api/resources?format=json&resource=DUMMY_PROJECT_KEY" );
+		assertThat( qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY ), equalTo( null ) );
+	}
+
+	@Test
+	public void getLastRunTimeStamp() throws Throwable {
+		doReturn( QUALITY_GATE_REPONSE ).when( client ).get( "/api/resources?format=json&resource=DUMMY_PROJECT_KEY" );
+		final LocalDateTime lastRunTimeStamp = qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY );
+		assertThat( lastRunTimeStamp, equalTo( LocalDateTime.of( 2016, 4, 29, 8, 9, 22, 0 ) ) );
 	}
 
 	private SonarQualityGateServiceImpl qualityGateService() {

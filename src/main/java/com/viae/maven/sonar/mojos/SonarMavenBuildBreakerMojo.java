@@ -8,23 +8,30 @@ import com.viae.maven.sonar.config.SonarStrings;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
 import org.sonar.wsclient.SonarClient;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * MOJO to validate a project against a given quality gate.
  *
  * Created by Vandeperre Maarten on 29/04/2016.
  */
-@Mojo(name = "validate-qualitygate", aggregator = true)
+@Mojo(name = SonarStrings.MOJO_NAME_VALIDATE_QUALITY_GATE, aggregator = true)
 public class SonarMavenBuildBreakerMojo extends AbstractMojo {
+    public static final int FIVE_MINUTES_IN_SECONDS = 500;
     @Parameter(property = SonarStrings.SERVER, required = true)
     protected String sonarServer;
-    @Parameter(property = SonarStrings.PROJECT_KEY, required = true)
+    @Parameter(property = SonarStrings.PROJECT_KEY)
     protected String sonarKey;
     @Parameter(property = SonarStrings.BRANCH)
     protected String branchName;
@@ -34,6 +41,9 @@ public class SonarMavenBuildBreakerMojo extends AbstractMojo {
     protected String sonarPassword;
     @Parameter(property = SonarStrings.EXECUTION_START)
     protected String sonarExecutionStart;
+
+    @Component
+    protected MavenProject project;
 
     private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
 
@@ -56,11 +66,17 @@ public class SonarMavenBuildBreakerMojo extends AbstractMojo {
                                                   .build();
 
             getLog().info(String.format("validate quality gate for projectKey[%s] and branch [%s]", sonarKey, branchName));
-            String computedProjectKey = qualityGateService.composeSonarProjectKey( sonarKey, branchName );
+            final String computedProjectKey = qualityGateService.composeSonarProjectKey( project, sonarKey, branchName );
             getLog().info( String.format( "%s property '%s': %s", SonarStrings.LOG_PREFIX, SonarStrings.PROJECT_KEY, sonarKey ) );
             getLog().info( String.format( "%s property '%s': %s", SonarStrings.LOG_PREFIX, SonarStrings.BRANCH, branchName ) );
             getLog().info( String.format( "%s computed project key: %s", SonarStrings.LOG_PREFIX, computedProjectKey ) );
-            qualityGateService.validateQualityGate( client, computedProjectKey );
+            if ( !StringUtils.isBlank( sonarExecutionStart ) ) {
+                final LocalDateTime executionStart = LocalDateTime.parse( sonarExecutionStart, DateTimeFormatter.ISO_DATE_TIME );
+                qualityGateService.validateQualityGate( client, computedProjectKey, executionStart, FIVE_MINUTES_IN_SECONDS );
+            }
+            else {
+                qualityGateService.validateQualityGate( client, computedProjectKey );
+            }
         }
         catch ( final SonarQualityException e ) {
             getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
