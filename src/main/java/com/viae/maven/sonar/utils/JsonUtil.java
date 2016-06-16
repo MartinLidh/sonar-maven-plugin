@@ -20,10 +20,10 @@ public class JsonUtil {
     private JsonUtil() {
     }
 
-    public static final String getIdOnMainLevel(final String qualityGateDetailJson) throws SonarQualityException {
+    public static final String getIdOnMainLevel( final String jsonString ) throws SonarQualityException {
         String id = null;
-        if (StringUtils.isNotBlank(qualityGateDetailJson)) {
-            final JSONObject json = parse( qualityGateDetailJson );
+        if ( StringUtils.isNotBlank( jsonString ) ) {
+            final JSONObject json = parse( jsonString );
             if (json.containsKey("id")) {
                 id = json.get("id").toString();
             }
@@ -31,10 +31,10 @@ public class JsonUtil {
         return id;
     }
 
-    public static final String getOnMainLevel( final String qualityGateDetailJson, final String fieldName ) throws SonarQualityException {
+    public static final String getOnMainLevel( final String jsonString, final String fieldName ) throws SonarQualityException {
         String id = null;
-        if ( StringUtils.isNotBlank( qualityGateDetailJson ) ) {
-            final JSONObject json = parse( qualityGateDetailJson );
+        if ( StringUtils.isNotBlank( jsonString ) ) {
+            final JSONObject json = parse( jsonString );
             if ( json.containsKey( fieldName ) ) {
                 id = json.get( fieldName ).toString();
             }
@@ -48,7 +48,26 @@ public class JsonUtil {
             return jsonObject instanceof JSONObject ? (JSONObject) jsonObject : (JSONObject) ((JSONArray) jsonObject).get(0);
         }
         catch ( final ParseException e ) {
-            throw new SonarQualityException(e);
+            throw new SonarQualityException( String.format( "could not parse json \n%s\nCause: %s", json, e.toString() ) );
+        }
+    }
+
+    public static JSONArray parseArray( final String json ) throws SonarQualityException {
+        try {
+            JSONArray result = new JSONArray();
+            if ( StringUtils.isNotBlank( json ) ) {
+                final Object jsonObject = jsonParser.parse( json );
+                if ( jsonObject instanceof JSONArray ) {
+                    result = (JSONArray) jsonObject;
+                }
+                else {
+                    result.add( jsonObject );
+                }
+            }
+            return result;
+        }
+        catch ( final ParseException e ) {
+            throw new SonarQualityException( String.format( "could not parse json \n%s\nCause: %s", json, e.toString() ) );
         }
     }
 }

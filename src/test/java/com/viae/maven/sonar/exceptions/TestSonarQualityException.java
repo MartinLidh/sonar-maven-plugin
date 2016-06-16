@@ -20,7 +20,7 @@ public class TestSonarQualityException {
     public void exceptionWithCause() throws Throwable {
         final Exception cause = new Exception("test");
         try {
-            throw new SonarQualityException(cause);
+            throw new SonarQualityException("", cause);
         } catch (SonarQualityException e){
             assertThat(e.getCause(), equalTo(cause));
             assertThat(e.getCause().getLocalizedMessage(), equalTo("test"));

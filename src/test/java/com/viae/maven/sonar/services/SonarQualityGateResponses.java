@@ -3,20 +3,18 @@
  */
 package com.viae.maven.sonar.services;
 
-import java.time.LocalDateTime;
-
 /**
  * Created by Vandeperre Maarten on 02/05/2016.
  */
 public class SonarQualityGateResponses {
 	public static final String OK = "{\"level\":\"OK\",\"conditions\":[]}";
 
-	public static final String ERROR_WITHOUT_CONDITIONS = "" +
+	public static final String ERROR_WITHOUT_CONDITIONS = "[{\"msr\":{\"data\":" +
 			"{\"level\":\"ERROR\"," +
 			"}" +
-			"";
+			"}}]";
 
-	public static final String ERROR_WITH_CONDITIONS_AS_NON_ARRAY = "" +
+	public static final String ERROR_WITH_CONDITIONS_AS_NON_ARRAY = "[{\"msr\":{\"data\":" +
 			"{\"level\":\"ERROR\"," +
 			"\"conditions\":" +
 			"{  " +
@@ -29,9 +27,9 @@ public class SonarQualityGateResponses {
 			"\"level\":\"ERROR\"" +
 			"}" +
 			"}" +
-			"";
+			"}}]";
 
-	public static final String CRITICAL_VIOLATIONS_TOO_HIGH = "" +
+	public static final String CRITICAL_VIOLATIONS_TOO_HIGH = "[{\"msr\":{\"data\":" +
 			"{\"level\":\"ERROR\"," +
 			"\"conditions\":[" +
 			"{  " +
@@ -45,7 +43,7 @@ public class SonarQualityGateResponses {
 			"}" +
 			"]" +
 			"}" +
-			"";
+			"}}]";
 	
 	public static final String PROJECT_DETAIL = "{\"id\":22295,\"key\":\"test.package:sample-project:master\",\"name\":\"test.package:sample-project master\",\"scope\":\"PRJ\",\"qualifier\":\"TRK\",\"date\":\"2016-05-03T14:04:45+0200\",\"creationDate\":\"2016-05-02T16:32:23+0200\",\"lname\":\"test.package:sample-project master\",\"version\":\"0.0.1-SNAPSHOT\",\"branch\":\"master\",\"description\":\"\"}";
 

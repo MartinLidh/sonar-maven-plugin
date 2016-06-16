@@ -9,6 +9,7 @@ import com.viae.maven.sonar.exceptions.GitException;
 import com.viae.maven.sonar.services.GitService;
 import com.viae.maven.sonar.services.GitServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -48,7 +49,11 @@ public class SonarMavenSetGitBranchMojo extends AbstractMojo {
         }
         catch ( final GitException e ) {
             getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
-            throw new MojoExecutionException( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ), e );
+            throw new MojoFailureException( String.format( "%s %s\ncause:\n%s",
+                                                           SonarStrings.LOG_PREFIX,
+                                                           e.getLocalizedMessage(),
+                                                           ExceptionUtils.getStackTrace( e ) )
+                    , e );
         }
     }
 }

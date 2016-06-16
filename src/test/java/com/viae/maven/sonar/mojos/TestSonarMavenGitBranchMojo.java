@@ -7,7 +7,7 @@ package com.viae.maven.sonar.mojos;
 import com.viae.maven.sonar.GlobalSettings;
 import com.viae.maven.sonar.exceptions.GitException;
 import com.viae.maven.sonar.services.GitService;
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,14 +54,15 @@ public class TestSonarMavenGitBranchMojo {
 
     @Test
     public void gitExceptionHandling() throws Throwable {
-        Field field = mojo.getClass().getDeclaredField( "gitService" );
+        final Field field = mojo.getClass().getDeclaredField( "gitService" );
         field.setAccessible( true );
         field.set( mojo, gitService );
         doThrow( new GitException( new Exception( "sample-exception" ) ) ).when( this.gitService ).getBranchName( any( Runtime.class ) );
         try {
             mojo.execute();
             fail( "no error" );
-        } catch(MojoExecutionException e){
+        }
+        catch ( final MojoFailureException e ) {
             assertThat(e.getLocalizedMessage(), containsString("Something went wrong while executing GIT command"));
             assertThat(e.getCause().getCause().getLocalizedMessage(), containsString("sample-exception"));
         }

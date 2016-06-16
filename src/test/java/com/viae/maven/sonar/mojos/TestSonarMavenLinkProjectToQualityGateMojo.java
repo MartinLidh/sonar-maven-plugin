@@ -3,6 +3,7 @@ package com.viae.maven.sonar.mojos;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -67,13 +68,13 @@ public class TestSonarMavenLinkProjectToQualityGateMojo {
 		field.setAccessible( true );
 		field.set( mojo, service );
 
-		doThrow( new SonarQualityException( new Exception( "sample-exception" ) ) ).when( service ).linkQualityGateToProject( any( SonarClient.class ),
+		doThrow( new SonarQualityException( "", new Exception( "sample-exception" ) ) ).when( service ).linkQualityGateToProject( any( SonarClient.class ),
 		                                                                                                                      anyString(), anyString() );
 		try {
 			mojo.execute();
 			fail( "no error" );
 		}
-		catch ( final MojoExecutionException e ) {
+		catch ( final MojoFailureException e ) {
 			assertThat( e.getLocalizedMessage(), containsString( "sample-exception" ) );
 			assertThat( e.getCause().getCause().getLocalizedMessage(), containsString( "sample-exception" ) );
 		}

@@ -9,6 +9,7 @@ import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -43,7 +44,7 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 	@Component
 	protected MavenProject project;
 
-	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl();
+	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl(getLog());
 
 	/**
 	 * Set the sonar.execution.start property to the last run timestamp (if the property is not defined).
@@ -73,7 +74,11 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 			}
 			catch ( final SonarQualityException e ) {
 				getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
-				throw new MojoExecutionException( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ), e );
+				throw new MojoFailureException( String.format( "%s %s\ncause:\n%s",
+				                                               SonarStrings.LOG_PREFIX,
+				                                               e.getLocalizedMessage(),
+				                                               ExceptionUtils.getStackTrace( e ) )
+						, e );
 			}
 		}
 	}

@@ -8,11 +8,10 @@ import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.sonar.wsclient.SonarClient;
 
 import java.time.Duration;
@@ -25,12 +24,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Vandeperre Maarten on 30/04/2016.
  */
 public class SonarQualityGateServiceImpl implements SonarQualityGateService {
+
     private static final int SLEEP_INTERVAL = 100;
 
     private static final String LEVEL_ERROR = "ERROR";
     private static final String FIELD_LEVEL = "level";
     private static final String FIELD_CONDITIONS = "conditions";
     public static final String QUALITY_GATE_QUERY_URL = "/api/resources/index?metrics=quality_gate_details&format=json&resource=%s";
+
+    private final Log logger;
+
+    public SonarQualityGateServiceImpl( final Log logger ) {
+        this.logger = logger;
+    }
 
     @Override
     public void validateQualityGate( final SonarClient client,
@@ -46,11 +52,15 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
         Validate.notBlank( projectKey, "The given project key can't be blank" );
 
         try {
-            final String qualityGateDetailsData = client.get( String.format( QUALITY_GATE_QUERY_URL, projectKey ) );
+            final String url = String.format( QUALITY_GATE_QUERY_URL, projectKey );
+            logger.info( String.format( "Retrieve quality gate details from: %s", url ) );
+            final String qualityGateDetailsData = client.get( url );
+            logger.info( String.format( "Resulting quality gate state: %s", qualityGateDetailsData ) );
             if ( StringUtils.isNotBlank( qualityGateDetailsData ) ) {
-                final JSONParser jsonParser = new JSONParser();
-                final JSONObject jsonObject = (JSONObject) jsonParser.parse( qualityGateDetailsData );
-                if (LEVEL_ERROR.equals(((String) jsonObject.get(FIELD_LEVEL)).toUpperCase())) {
+                final String msr = JsonUtil.getOnMainLevel( qualityGateDetailsData, "msr" );
+                final String data = StringUtils.isNotBlank( msr ) ? JsonUtil.getOnMainLevel( msr, "data" ) : "";
+                final String level = StringUtils.isNotBlank( data ) ? JsonUtil.getOnMainLevel( data, FIELD_LEVEL ) : "";
+                if ( LEVEL_ERROR.equals( level.toUpperCase() ) ) {
                     final StringJoiner joiner = new StringJoiner( "\n" );
                     joiner.add("");
                     joiner.add("############################");
@@ -58,16 +68,17 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
                     joiner.add("### quality gate not met ###");
                     joiner.add("############################");
                     joiner.add("############################");
-                    final Object conditionsResponse = jsonObject.get( FIELD_CONDITIONS );
-                    if ( conditionsResponse != null && conditionsResponse instanceof JSONArray ) {
+                    final JSONArray conditionsResponse = JsonUtil.parseArray( JsonUtil.getOnMainLevel( data, FIELD_CONDITIONS ) );
+                    if ( conditionsResponse != null ) {
                         joiner.add("Conditions:");
-                        ((JSONArray) conditionsResponse).forEach(condition -> joiner.add(condition.toString()));
+                        ( conditionsResponse ).forEach( condition -> joiner.add( condition.toString() ) );
                     }
                     throw new SonarQualityException(joiner.toString());
                 }
             }
-        } catch (final ParseException e) {
-            throw new SonarQualityException(e);
+        }
+        catch ( final Exception e ) {
+            throw new SonarQualityException( String.format( "Error while getting quality gate data:\n%s", ExceptionUtils.getStackTrace( e )), e );
         }
     }
 
@@ -139,9 +150,9 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
         String resultingKey = String.format( "%s:%s", project.getGroupId(), project.getArtifactId() );
         if (projectKey != null) {
             resultingKey = projectKey;
-            if (StringUtils.isNotBlank(branchName)) {
-                resultingKey += ":" + branchName;
-            }
+        }
+        if (StringUtils.isNotBlank(branchName)) {
+            resultingKey += ":" + branchName;
         }
         return resultingKey;
     }

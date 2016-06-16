@@ -6,6 +6,7 @@ package com.viae.maven.sonar.services;
 
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class TestSonarQualityGateServiceImpl {
 	public static final String QUALITY_GATE_QUERY_URL = "/api/resources/index?metrics=quality_gate_details&format=json&resource=%s";
 	private final ArgumentCaptor<Map> MAP_CAPTOR = ArgumentCaptor.forClass( Map.class );
 
-	private final SonarQualityGateService qualityGateService = spy( new SonarQualityGateServiceImpl() );
+	private final SonarQualityGateService qualityGateService = spy( new SonarQualityGateServiceImpl( mock( Log.class ) ) );
 	private final SonarClient client = mock( SonarClient.class );
 
 	@Before
@@ -40,17 +41,8 @@ public class TestSonarQualityGateServiceImpl {
 	}
 
 	@Test
-	public void qualityGateMet() throws Throwable {
-//        final SonarClient s = SonarClient.builder()
-//                                         .url( "http://sonar.projects.foreach.be/" )
-//                                         .login( "buildserver" )
-//                                         .password( "buildserver" )
-//                                         .build();
-//        System.out.println( qualityGateService.getLastRunTimeStamp( s, "be.resto:myresto-project:master" ) );
-//        fail( "remove this" );
-//        doReturn(resource(SonarQualityGateResponses.OK)).when(client).find(RESOURCE_QUERY_CAPTOR.capture());
-//        qualityGateService.validateQualityGate(client, DUMMY_PROJECT_KEY);
-//        assertEquals(DUMMY_PROJECT_KEY, RESOURCE_QUERY_CAPTOR.getValue().getResourceKeyOrId());
+	public void realLifeScenarioWithReturnAsList() throws Throwable {
+		final String result = "";
 	}
 
 	@Test
@@ -80,7 +72,7 @@ public class TestSonarQualityGateServiceImpl {
 		catch ( final SonarQualityException e ) {
 			System.out.print( e.getLocalizedMessage() );
 			assertTrue( e.getLocalizedMessage().contains( "quality gate not met" ) );
-			assertFalse( e.getLocalizedMessage().toLowerCase().contains( "conditions".toLowerCase() ) );
+			assertTrue( e.getLocalizedMessage().toLowerCase().contains( "conditions".toLowerCase() ) );
 		}
 	}
 
@@ -95,7 +87,7 @@ public class TestSonarQualityGateServiceImpl {
 		catch ( final SonarQualityException e ) {
 			System.out.print( e.getLocalizedMessage() );
 			assertTrue( e.getLocalizedMessage().contains( "quality gate not met" ) );
-			assertFalse( e.getLocalizedMessage().toLowerCase().contains( "conditions".toLowerCase() ) );
+			assertTrue( e.getLocalizedMessage().toLowerCase().contains( "conditions".toLowerCase() ) );
 		}
 	}
 
@@ -116,7 +108,9 @@ public class TestSonarQualityGateServiceImpl {
 		final MavenProject project = new MavenProject();
 		project.setGroupId( "groupId" );
 		project.setArtifactId( "artifactId" );
-		assertThat( qualityGateService.composeSonarProjectKey( project, null, DUMMY_BRANCH_NAME ), equalTo( "groupId:artifactId" ) );
+		assertThat( qualityGateService.composeSonarProjectKey( project, null, DUMMY_BRANCH_NAME ), equalTo( "groupId:artifactId:" + DUMMY_BRANCH_NAME ) );
+		assertThat( qualityGateService.composeSonarProjectKey( project, null, null ), equalTo( "groupId:artifactId" ) );
+		assertThat( qualityGateService.composeSonarProjectKey( project, null, "" ), equalTo( "groupId:artifactId" ) );
 		assertThat( qualityGateService.composeSonarProjectKey( project, DUMMY_PROJECT_KEY, null ), equalTo( DUMMY_PROJECT_KEY ) );
 		assertThat( qualityGateService.composeSonarProjectKey( project, DUMMY_PROJECT_KEY, DUMMY_BRANCH_NAME ),
 		            equalTo( DUMMY_PROJECT_KEY + ":" + DUMMY_BRANCH_NAME ) );

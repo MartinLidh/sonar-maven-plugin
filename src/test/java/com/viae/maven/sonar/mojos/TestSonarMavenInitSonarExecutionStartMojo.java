@@ -3,6 +3,7 @@ package com.viae.maven.sonar.mojos;
 import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,7 +96,7 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 			mojo.execute();
 			fail( "no error" );
 		}
-		catch ( final MojoExecutionException e ) {
+		catch ( final MojoFailureException e ) {
 			assertTrue( e.getLocalizedMessage(), e.getLocalizedMessage().contains( "error" ) );
 		}
 	}

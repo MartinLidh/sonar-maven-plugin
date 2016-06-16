@@ -13,7 +13,8 @@ public class SonarQualityException extends Exception {
     public SonarQualityException(final String errorMessage){
         super(errorMessage);
     }
-    public SonarQualityException(final Exception cause){
+
+    public SonarQualityException( final String errorMessage, final Exception cause ) {
         super(cause);
     }
 }

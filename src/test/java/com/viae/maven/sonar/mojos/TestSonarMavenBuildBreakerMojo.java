@@ -4,6 +4,7 @@ import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class TestSonarMavenBuildBreakerMojo {
 
 	private final SonarMavenBuildBreakerMojo mojo = new SonarMavenBuildBreakerMojo();
 
-	private final SonarQualityGateService service = spy( new SonarQualityGateServiceImpl() );
+	private final SonarQualityGateService service = spy( new SonarQualityGateServiceImpl( mock( Log.class ) ) );
 	private final ArgumentCaptor<String> projectKeyCaptor = ArgumentCaptor.forClass( String.class );
 	private final MavenProject project = new MavenProject();
 
