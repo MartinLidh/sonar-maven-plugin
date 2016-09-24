@@ -86,6 +86,7 @@ If the 'sonar.execution.start' property is set, the validation run will wait unt
 1. **sonar.host.url** : the root url of the sonar server.
 2. **sonar.login** : the user to login with (!! make sure this user has sufficient rights).
 3. **sonar.password** : the password linked to that user.
+4. **sonar.qualitygate** : the name of the quality gate you want to validate.
 
 #####Optional properties
 1. **sonar.branch** : the sonar branch for which you want to have the last run timestamp.
