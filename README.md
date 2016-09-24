@@ -30,7 +30,7 @@ This plugin is created to validate sonar quality gates and set sonar configurati
 
 ##set-git-branch
 *Sets the sonar.branch property to the current git branch (when it's not yet set).
-When set already, the property will not be overridden.*
+When set already, the property will not be overridden. When the branchname (set by the user / GIT branch name) contains speciale characters (e.g. '/') then those will be replaced by '-'. This is because sonar can't threat that character in its key name.*
 
 #####Required properties
 none
