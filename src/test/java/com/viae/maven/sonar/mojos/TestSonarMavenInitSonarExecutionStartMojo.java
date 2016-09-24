@@ -61,7 +61,7 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 	public void setTimeStampWithoutLastRunTimestamp() throws Throwable {
 		assertEquals( "guard assertion", null, project.getProperties().get( KEY ) );
 		final LocalDateTime before = LocalDateTime.now().minusSeconds( 1 );
-		doReturn( null ).when( service ).getLastRunTimeStamp( any( SonarClient.class), anyString() );
+		doReturn( null ).when( service ).getLastRunTimeStamp( any( SonarClient.class), anyString(), anyString() );
 		mojo.execute();
 		final LocalDateTime after = LocalDateTime.now().plusSeconds( 1 );
 		final String startTimeString = (String) project.getProperties().get( KEY );
@@ -73,7 +73,7 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 	public void setTimeStampWithLastRunTimestamp() throws Throwable {
 		assertEquals( "guard assertion", null, project.getProperties().get( KEY ) );
 		final LocalDateTime first = LocalDateTime.MIN;
-		doReturn( first ).when( service ).getLastRunTimeStamp( any( SonarClient.class), anyString() );
+		doReturn( first ).when( service ).getLastRunTimeStamp( any( SonarClient.class), anyString(), anyString() );
 		mojo.execute();
 		final String startTimeString = (String) project.getProperties().get( KEY );
 		assertEquals( DateTimeFormatter.ISO_DATE_TIME.format( first ), startTimeString );
@@ -91,7 +91,7 @@ public class TestSonarMavenInitSonarExecutionStartMojo {
 
 	@Test
 	public void setTimeStampWithException() throws Throwable {
-		doThrow( new SonarQualityException( "error" ) ).when( service ).getLastRunTimeStamp( any( SonarClient.class ), anyString() );
+		doThrow( new SonarQualityException( "error" ) ).when( service ).getLastRunTimeStamp( any( SonarClient.class ), anyString(), anyString() );
 		try {
 			mojo.execute();
 			fail( "no error" );

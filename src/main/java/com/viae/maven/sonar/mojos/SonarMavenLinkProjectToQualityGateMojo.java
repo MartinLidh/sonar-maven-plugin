@@ -64,7 +64,7 @@ public class SonarMavenLinkProjectToQualityGateMojo extends AbstractMojo {
 			getLog().info( String.format( "%s link project '%s' to quality gate %s", SonarStrings.LOG_PREFIX, projectKey, qualityGateName ) );
 			qualityGateService.linkQualityGateToProject( client, projectKey, qualityGateName );
 		}
-		catch ( final SonarQualityException e ) {
+		catch ( final Exception e ) {
 			getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
 			throw new MojoFailureException( String.format( "%s %s\ncause:\n%s",
 			                                               SonarStrings.LOG_PREFIX,

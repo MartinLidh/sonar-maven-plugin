@@ -5,7 +5,6 @@
 package com.viae.maven.sonar.mojos;
 
 import com.viae.maven.sonar.config.SonarStrings;
-import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 @Mojo(name = SonarStrings.MOJO_NAME_SET_EXECUTION_START, aggregator = true)
 public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 
+	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl( getLog() );
 	@Parameter(property = SonarStrings.SERVER, required = true)
 	protected String sonarServer;
 	@Parameter(property = SonarStrings.PROJECT_KEY)
@@ -40,11 +40,10 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 	protected String sonarPassword;
 	@Parameter(property = SonarStrings.BRANCH)
 	protected String branchName;
-
+	@Parameter(property = SonarStrings.QUALITY_GATE, required = true)
+	protected String qualityGateName;
 	@Component
 	protected MavenProject project;
-
-	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl(getLog());
 
 	/**
 	 * Set the sonar.execution.start property to the last run timestamp (if the property is not defined).
@@ -64,7 +63,7 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 				                                      .password( sonarPassword )
 				                                      .build();
 				final LocalDateTime lastRunTimeStamp =
-						qualityGateService.getLastRunTimeStamp( client, qualityGateService.composeSonarProjectKey( project, sonarKey, branchName ) );
+						qualityGateService.getLastRunTimeStamp( client, qualityGateService.composeSonarProjectKey( project, sonarKey, branchName ), qualityGateName );
 
 				getLog().info( String.format( "%s last run timestamp (i.e. from sonar): '%s'", SonarStrings.LOG_PREFIX, lastRunTimeStamp ) );
 				final LocalDateTime executionStart = lastRunTimeStamp != null ? lastRunTimeStamp : LocalDateTime.now();
@@ -72,7 +71,7 @@ public class SonarMavenInitSonarExecutionStartMojo extends AbstractMojo {
 				getLog().info( String.format( "%s set property '%s' to '%s'", SonarStrings.LOG_PREFIX, SonarStrings.EXECUTION_START, executionStartValue ) );
 				project.getProperties().setProperty( SonarStrings.EXECUTION_START, executionStartValue );
 			}
-			catch ( final SonarQualityException e ) {
+			catch ( final Exception e ) {
 				getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
 				throw new MojoFailureException( String.format( "%s %s\ncause:\n%s",
 				                                               SonarStrings.LOG_PREFIX,

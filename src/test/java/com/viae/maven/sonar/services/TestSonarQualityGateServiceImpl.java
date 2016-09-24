@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static com.viae.maven.sonar.services.SonarQualityGateResponses.*;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -27,9 +27,9 @@ import static org.mockito.Mockito.*;
  * Created by Vandeperre Maarten on 01/05/2016.
  */
 public class TestSonarQualityGateServiceImpl {
+	public static final String QUALITY_GATE_QUERY_URL = "/api/resources/index?metrics=quality_gate_details&format=json&resource=%s";
 	private static final String DUMMY_PROJECT_KEY = "DUMMY_PROJECT_KEY";
 	private static final String DUMMY_BRANCH_NAME = "DUMMY_BRANCH_NAME";
-	public static final String QUALITY_GATE_QUERY_URL = "/api/resources/index?metrics=quality_gate_details&format=json&resource=%s";
 	private final ArgumentCaptor<Map> MAP_CAPTOR = ArgumentCaptor.forClass( Map.class );
 
 	private final SonarQualityGateService qualityGateService = spy( new SonarQualityGateServiceImpl( mock( Log.class ) ) );
@@ -49,7 +49,7 @@ public class TestSonarQualityGateServiceImpl {
 	public void tooManyViolations() throws Throwable {
 		doReturn( SonarQualityGateResponses.CRITICAL_VIOLATIONS_TOO_HIGH ).when( client ).get( String.format( QUALITY_GATE_QUERY_URL, DUMMY_PROJECT_KEY ) );
 		try {
-			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY );
+			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY, null );
 			fail( "no error" );
 		}
 		catch ( final SonarQualityException e ) {
@@ -66,7 +66,7 @@ public class TestSonarQualityGateServiceImpl {
 	public void noConditionsInServerResponseOnError() throws Throwable {
 		doReturn( SonarQualityGateResponses.ERROR_WITHOUT_CONDITIONS ).when( client ).get( String.format( QUALITY_GATE_QUERY_URL, DUMMY_PROJECT_KEY ) );
 		try {
-			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY );
+			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY, null );
 			fail( "no error" );
 		}
 		catch ( final SonarQualityException e ) {
@@ -81,7 +81,7 @@ public class TestSonarQualityGateServiceImpl {
 		doReturn( SonarQualityGateResponses.ERROR_WITH_CONDITIONS_AS_NON_ARRAY ).when( client ).get(
 				String.format( QUALITY_GATE_QUERY_URL, DUMMY_PROJECT_KEY ) );
 		try {
-			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY );
+			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY, null );
 			fail( "no error" );
 		}
 		catch ( final SonarQualityException e ) {
@@ -95,7 +95,7 @@ public class TestSonarQualityGateServiceImpl {
 	public void invalidJson() throws Throwable {
 		doReturn( "{tsetdit = invalid json}" ).when( client ).get( String.format( QUALITY_GATE_QUERY_URL, DUMMY_PROJECT_KEY ) );
 		try {
-			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY );
+			qualityGateService.validateQualityGate( client, DUMMY_PROJECT_KEY, null );
 			fail( "no error" );
 		}
 		catch ( final SonarQualityException e ) {
@@ -187,7 +187,7 @@ public class TestSonarQualityGateServiceImpl {
 
 		final Map postedMap = MAP_CAPTOR.getValue();
 		assertThat( postedMap.get( "gateId" ), equalTo( "2" ) );
-		assertThat( postedMap.get( "projectId" ), equalTo( "22295" ) );
+		assertThat( postedMap.get( "projectId" ), equalTo( 22295 ) );
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public class TestSonarQualityGateServiceImpl {
 
 		final Map postedMap = MAP_CAPTOR.getValue();
 		assertThat( postedMap.get( "gateId" ), equalTo( "2" ) );
-		assertThat( postedMap.get( "projectId" ), equalTo( "22295" ) );
+		assertThat( postedMap.get( "projectId" ), equalTo( 22295 ) );
 	}
 
 	@Test
@@ -216,7 +216,7 @@ public class TestSonarQualityGateServiceImpl {
 		final int secondsToWait = -1;
 
 		final LocalDateTime start = LocalDateTime.now();
-		qualityGateService().waitForNewPublishingOfSonarResults( client, projectKey, executionStart, secondsToWait );
+		qualityGateService().waitForNewPublishingOfSonarResults( client, projectKey, null, executionStart, secondsToWait );
 		final LocalDateTime end = LocalDateTime.now();
 		final long duration = Duration.between( start, end ).getSeconds();
 
@@ -229,11 +229,11 @@ public class TestSonarQualityGateServiceImpl {
 		final LocalDateTime executionStart = LocalDateTime.now();
 		final int secondsToWait = 2;
 
-		doReturn( executionStart ).when( qualityGateService() ).getLastRunTimeStamp( client, projectKey );
+		doReturn( executionStart ).when( qualityGateService() ).getLastRunTimeStamp( client, projectKey, null );
 
 		final LocalDateTime start = LocalDateTime.now();
 		try {
-			qualityGateService().waitForNewPublishingOfSonarResults( client, projectKey, executionStart, secondsToWait );
+			qualityGateService().waitForNewPublishingOfSonarResults( client, projectKey, null, executionStart, secondsToWait );
 			fail( "no error" );
 		}
 		catch ( final SonarQualityException e ) {
@@ -249,7 +249,7 @@ public class TestSonarQualityGateServiceImpl {
 	@Test
 	public void getLastRunTimeStampWithNullSonarClient() throws Throwable {
 		try {
-			qualityGateService.getLastRunTimeStamp( null, RandomStringUtils.randomAlphabetic( 5 ) );
+			qualityGateService.getLastRunTimeStamp( null, RandomStringUtils.randomAlphabetic( 5 ), null );
 			fail( "no error" );
 		}
 		catch ( final NullPointerException e ) {
@@ -260,7 +260,7 @@ public class TestSonarQualityGateServiceImpl {
 	@Test
 	public void getLastRunTimeStampWithNullProjectKey() throws Throwable {
 		try {
-			qualityGateService.getLastRunTimeStamp( client, null );
+			qualityGateService.getLastRunTimeStamp( client, null, null );
 			fail( "no error" );
 		}
 		catch ( final NullPointerException e ) {
@@ -271,16 +271,67 @@ public class TestSonarQualityGateServiceImpl {
 	@Test
 	public void getLastRunTimeStampWithBlankResponse() throws Throwable {
 		doReturn( null ).when( client ).get( "/api/resources?format=json&resource=DUMMY_PROJECT_KEY" );
-		assertThat( qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY ), equalTo( null ) );
+		assertThat( qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY, null ), equalTo( null ) );
 		doReturn( "" ).when( client ).get( "/api/resources?format=json&resource=DUMMY_PROJECT_KEY" );
-		assertThat( qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY ), equalTo( null ) );
+		assertThat( qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY, null ), equalTo( null ) );
 	}
 
 	@Test
 	public void getLastRunTimeStamp() throws Throwable {
 		doReturn( QUALITY_GATE_REPONSE ).when( client ).get( "/api/resources?format=json&resource=DUMMY_PROJECT_KEY" );
-		final LocalDateTime lastRunTimeStamp = qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY );
+		final LocalDateTime lastRunTimeStamp = qualityGateService.getLastRunTimeStamp( client, DUMMY_PROJECT_KEY, null );
 		assertThat( lastRunTimeStamp, equalTo( LocalDateTime.of( 2016, 4, 29, 8, 9, 22, 0 ) ) );
+	}
+
+	@Test
+	public void testResponseProjectDataParsingWithArrayResult() throws Throwable {
+		String json = "" +
+				"[" +
+				"{" +
+				"\"id\": \"3421\"," +
+				"\"k\": \"com.viae-test:my-test:branch\"," +
+				"\"nm\": \"com.viae-test:my-test\"," +
+				"\"sc\": \"PRJ\"," +
+				"\"qu\": \"TRK\"" +
+				"}" +
+				"]" +
+				"";
+		assertThat( qualityGateService().getProjectId( json ), equalTo( 3421 ) );
+	}
+
+	@Test
+	public void testResponseProjectDataParsing() throws Throwable {
+		String json = "" +
+				"{" +
+				"\"id\": \"3421\"," +
+				"\"k\": \"com.viae-test:my-test:branch\"," +
+				"\"nm\": \"com.viae-test:my-test\"," +
+				"\"sc\": \"PRJ\"," +
+				"\"qu\": \"TRK\"" +
+				"}" +
+				"";
+		assertThat( qualityGateService().getProjectId( json ), equalTo( 3421 ) );
+	}
+
+	@Test
+	public void testResponseProjectDataParsingWithException() throws Throwable {
+		String json = "" +
+				"{" +
+				"\"idd\": \"3421\"," +
+				"\"k\": \"com.viae-test:my-test:branch\"," +
+				"\"nm\": \"com.viae-test:my-test\"," +
+				"\"sc\": \"PRJ\"," +
+				"\"qu\": \"TRK\"" +
+				"}" +
+				"";
+		try {
+			qualityGateService().getProjectId( json );
+			fail( "no error" );
+		}
+		catch ( SonarQualityException e ) {
+			assertThat( e.getLocalizedMessage(), e.getLocalizedMessage(), containsString( "idd" ) );
+			assertThat( e.getCause(), instanceOf( NumberFormatException.class ) );
+		}
 	}
 
 	private SonarQualityGateServiceImpl qualityGateService() {

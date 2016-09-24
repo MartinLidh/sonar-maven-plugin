@@ -5,7 +5,6 @@
 package com.viae.maven.sonar.mojos;
 
 import com.viae.maven.sonar.config.SonarStrings;
-import com.viae.maven.sonar.exceptions.SonarQualityException;
 import com.viae.maven.sonar.services.SonarQualityGateService;
 import com.viae.maven.sonar.services.SonarQualityGateServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 @Mojo(name = SonarStrings.MOJO_NAME_VALIDATE_QUALITY_GATE, aggregator = true)
 public class SonarMavenBuildBreakerMojo extends AbstractMojo {
 	public static final int FIVE_MINUTES_IN_SECONDS = 500;
+	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl( getLog() );
 	@Parameter(property = SonarStrings.SERVER, required = true)
 	protected String sonarServer;
 	@Parameter(property = SonarStrings.PROJECT_KEY)
@@ -42,11 +42,10 @@ public class SonarMavenBuildBreakerMojo extends AbstractMojo {
 	protected String sonarPassword;
 	@Parameter(property = SonarStrings.EXECUTION_START)
 	protected String sonarExecutionStart;
-
+	@Parameter(property = SonarStrings.QUALITY_GATE, required = true)
+	protected String qualityGateName;
 	@Component
 	protected MavenProject project;
-
-	private final SonarQualityGateService qualityGateService = new SonarQualityGateServiceImpl( getLog() );
 
 	/**
 	 * Validate a project against a given quality gate.
@@ -73,13 +72,13 @@ public class SonarMavenBuildBreakerMojo extends AbstractMojo {
 			getLog().info( String.format( "%s computed project key: %s", SonarStrings.LOG_PREFIX, computedProjectKey ) );
 			if ( !StringUtils.isBlank( sonarExecutionStart ) ) {
 				final LocalDateTime executionStart = LocalDateTime.parse( sonarExecutionStart, DateTimeFormatter.ISO_DATE_TIME );
-				qualityGateService.validateQualityGate( client, computedProjectKey, executionStart, FIVE_MINUTES_IN_SECONDS );
+				qualityGateService.validateQualityGate( client, computedProjectKey, qualityGateName, executionStart, FIVE_MINUTES_IN_SECONDS );
 			}
 			else {
-				qualityGateService.validateQualityGate( client, computedProjectKey );
+				qualityGateService.validateQualityGate( client, computedProjectKey, qualityGateName );
 			}
 		}
-		catch ( final SonarQualityException e ) {
+		catch ( final Exception e ) {
 			getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
 			throw new MojoFailureException( String.format( "%s %s\ncause:\n%s",
 			                                               SonarStrings.LOG_PREFIX,

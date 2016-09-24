@@ -54,7 +54,8 @@ public class TestSonarMavenBuildBreakerMojo {
 		field.set( mojo, service );
 
 		doThrow( new SonarQualityException( "quality gate not met" ) ).when( service ).validateQualityGate( org.mockito.Mockito.any( SonarClient.class ),
-		                                                                                                    projectKeyCaptor.capture() );
+		                                                                                                    projectKeyCaptor.capture(),
+		                                                                                                    eq( null ) );
 		try {
 			mojo.execute();
 			fail( "no error" );
@@ -62,7 +63,7 @@ public class TestSonarMavenBuildBreakerMojo {
 		catch ( final MojoFailureException e ) {
 			assertThat( e.getLocalizedMessage(), containsString( "quality gate not met" ) );
 		}
-		assertThat(projectKeyCaptor.getValue(), equalTo( "sonarKey:branchName" ));
+		assertThat( projectKeyCaptor.getValue(), equalTo( "sonarKey:branchName" ) );
 	}
 
 	@Test
@@ -78,10 +79,10 @@ public class TestSonarMavenBuildBreakerMojo {
 		field.setAccessible( true );
 		field.set( mojo, service );
 
-		doNothing().when( service ).validateQualityGate( any( SonarClient.class ), projectKeyCaptor.capture() );
+		doNothing().when( service ).validateQualityGate( any( SonarClient.class ), projectKeyCaptor.capture(), eq( null ) );
 		mojo.execute();
 
-		verify( service ).validateQualityGate( any( SonarClient.class ), anyString() );
+		verify( service ).validateQualityGate( any( SonarClient.class ), anyString(), anyString() );
 	}
 
 	@Test
@@ -104,13 +105,13 @@ public class TestSonarMavenBuildBreakerMojo {
 				.doReturn( now )
 				.doReturn( now )
 				.doReturn( now.plusHours( 1 ) )
-				.when( service ).getLastRunTimeStamp( any( SonarClient.class ), anyString() );
+				.when( service ).getLastRunTimeStamp( any( SonarClient.class ), anyString(), anyString() );
 
 		doNothing().when( (SonarQualityGateServiceImpl) service ).handleQualityGateState( any( SonarClient.class ), projectKeyCaptor.capture() );
 		mojo.execute();
 
-		verify( service, times( 1 ) ).validateQualityGate( any( SonarClient.class ), anyString(), any( LocalDateTime.class ), anyInt() );
-		verify( service, times( 4 ) ).getLastRunTimeStamp( any( SonarClient.class ), anyString() );
+		verify( service, times( 1 ) ).validateQualityGate( any( SonarClient.class ), anyString(), anyString(), any( LocalDateTime.class ), anyInt() );
+		verify( service, times( 4 ) ).getLastRunTimeStamp( any( SonarClient.class ), anyString(), anyString() );
 	}
 
 }
