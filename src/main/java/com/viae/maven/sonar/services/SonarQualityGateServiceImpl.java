@@ -94,7 +94,7 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
 		final LocalDateTime start = LocalDateTime.now();
 		if ( executionStart != null ) {
 			LocalDateTime lastRunTimeStamp = getLastRunTimeStamp( client, projectKey, qualityGateName );
-			while ( !lastRunTimeStamp.isAfter( executionStart ) ) {
+			while ( !lastRunTimeStamp.isAfter( executionStart ) || !qualityGateDetailsExists( client, projectKey ) ) {
 				final long duration = Duration.between( start, LocalDateTime.now() ).getSeconds();
 				if ( duration > secondsToWait ) {
 					throw new SonarQualityException(
@@ -104,6 +104,19 @@ public class SonarQualityGateServiceImpl implements SonarQualityGateService {
 				lastRunTimeStamp = getLastRunTimeStamp( client, projectKey, qualityGateName );
 			}
 		}
+	}
+
+	public boolean qualityGateDetailsExists( final SonarClient client,
+	                                         final String projectKey ) {
+		boolean exists = false;
+		String url = String.format( QUALITY_GATE_QUERY_URL, projectKey );
+		try {
+			client.get( url );
+		}
+		catch ( HttpException e ) {
+			logger.info( String.format( "url %s does not exist", url ) );
+		}
+		return exists;
 	}
 
 	private void sleep() {

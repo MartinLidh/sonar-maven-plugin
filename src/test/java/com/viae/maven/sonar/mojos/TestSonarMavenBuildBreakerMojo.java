@@ -89,7 +89,7 @@ public class TestSonarMavenBuildBreakerMojo {
 	public void doNotbreakBuildForWaitingTime() throws Throwable {
 		final LocalDateTime now = LocalDateTime.now();
 
-		mojo.sonarServer = "sonarServer";
+		mojo.sonarServer = "http://sonarServer";
 		mojo.sonarUser = "sonarUser";
 		mojo.sonarKey = "sonarKey";
 		mojo.sonarPassword = "sonarPassword";
@@ -108,6 +108,7 @@ public class TestSonarMavenBuildBreakerMojo {
 				.when( service ).getLastRunTimeStamp( any( SonarClient.class ), anyString(), anyString() );
 
 		doNothing().when( (SonarQualityGateServiceImpl) service ).handleQualityGateState( any( SonarClient.class ), projectKeyCaptor.capture() );
+		doReturn(true).when( (SonarQualityGateServiceImpl) service ).qualityGateDetailsExists( any( SonarClient.class ), projectKeyCaptor.capture() );
 		mojo.execute();
 
 		verify( service, times( 1 ) ).validateQualityGate( any( SonarClient.class ), anyString(), anyString(), any( LocalDateTime.class ), anyInt() );
