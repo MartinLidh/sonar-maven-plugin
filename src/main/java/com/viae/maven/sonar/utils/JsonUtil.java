@@ -11,6 +11,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Optional;
+
 /**
  * Created by Vandeperre Maarten on 03/05/2016.
  */
@@ -42,7 +44,7 @@ public class JsonUtil {
         return id;
     }
 
-    private static JSONObject parse( final String json ) throws SonarQualityException {
+    public static JSONObject parse( final String json ) throws SonarQualityException {
         try {
             final Object jsonObject = jsonParser.parse( json );
             return jsonObject instanceof JSONObject ? (JSONObject) jsonObject : (JSONObject) ((JSONArray) jsonObject).get(0);

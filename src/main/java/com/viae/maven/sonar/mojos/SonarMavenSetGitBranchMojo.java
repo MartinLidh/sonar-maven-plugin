@@ -7,6 +7,7 @@ package com.viae.maven.sonar.mojos;
 import com.viae.maven.sonar.config.SonarStrings;
 import com.viae.maven.sonar.services.GitService;
 import com.viae.maven.sonar.services.GitServiceImpl;
+import com.viae.maven.sonar.utils.SpecialCharacterUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -15,8 +16,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
-
-import java.util.Optional;
 
 /**
  * Mojo to set the sonar.branch property to the git branch name (if the property is not defined).
@@ -51,7 +50,7 @@ public class SonarMavenSetGitBranchMojo extends AbstractMojo {
 			else {
 				resultingBranchName = existingBranchValue;
 			}
-			project.getProperties().setProperty( SonarStrings.BRANCH, Optional.ofNullable( resultingBranchName ).orElse( "" ).replace( "/", "-" ) );
+			project.getProperties().setProperty( SonarStrings.BRANCH, SpecialCharacterUtil.makeStringFreeOfSpecialCharacters( resultingBranchName ) );
 		}
 		catch ( final Exception e ) {
 			getLog().error( String.format( "%s %s", SonarStrings.LOG_PREFIX, e.getLocalizedMessage() ) );
