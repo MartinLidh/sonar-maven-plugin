@@ -2,12 +2,12 @@
 This plugin is created to validate sonar quality gates and set sonar configuration through maven.
 
 # Table of Contents
-1. [Components overview](/#components-overview)
-2. [Goal: set-git-branch](set-git-branch)
-3. [Goal: set-sonar-execution-start](set-sonar-execution-start)
-4. [Goal: link-project-to-qualitygate](link-project-to-qualitygate)
-5. [Goal: validate-qualitygate](validate-qualitygate)
-6. [Maven example](maven example)
+1. [Components overview](https://github.com/VandeperreMaarten/sonar-maven-plugin#components-overview)
+2. [set-git-branch](https://github.com/VandeperreMaarten/sonar-maven-plugin#set-git-branch)
+3. [set-sonar-execution-start](https://github.com/VandeperreMaarten/sonar-maven-plugin#set-sonar-execution-start)
+4. [link-project-to-qualitygate](https://github.com/VandeperreMaarten/sonar-maven-plugin#link-project-to-qualitygate)
+5. [validate-qualitygate](https://github.com/VandeperreMaarten/sonar-maven-plugin#validate-qualitygate)
+6. [Maven example](https://github.com/VandeperreMaarten/sonar-maven-plugin#maven-example)
 
 ## **Components overview**
 
@@ -41,7 +41,7 @@ mvn com.viae-it.maven:sonar-maven-plugin:set-git-branch
 ## set-sonar-execution-start
 *This will call sonar via the API, look for the last run timestamp and store it in the 'sonar.execution.start' property.
 When there was no last run configuration found, the timestamp will be set to now.
-When the 'sonar.execution.start' property is set, the [validate-qualitygate goal](validate-qualitygate) will use it to verify that the new run has ended.
+When the 'sonar.execution.start' property is set, the [validate-qualitygate](https://github.com/VandeperreMaarten/sonar-maven-plugin#validate-qualitygate) will use it to verify that the new run has ended.
 
 ##### Required properties
 1. **sonar.host.url** : the root url of the sonar server.
@@ -80,7 +80,7 @@ mvn com.viae-it.maven:sonar-maven-plugin:link-project-to-qualitygate
 *Checks if the project did pass the quality gate (i.e. property 'sonar.qualitygate') after last sonar run.
 If the quality gate is not met, the maven build will break and will show the condition states (also from the ones that were passed).
 If the 'sonar.execution.start' property is set, the validation run will wait until the timestamp of the last run is after this value
-(can be set via [set-sonar-execution-start](set-sonar-execution-start)). If nothing changed for 5 minutes, an exception will be thrown.
+(can be set via [set-sonar-execution-start](https://github.com/VandeperreMaarten/sonar-maven-plugin#set-sonar-execution-start)). If nothing changed for 5 minutes, an exception will be thrown.
 
 ##### Required properties
 1. **sonar.host.url** : the root url of the sonar server.
