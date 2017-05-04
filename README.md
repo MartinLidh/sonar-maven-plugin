@@ -13,23 +13,23 @@ This plugin is created to validate sonar quality gates and set sonar configurati
 
 * **set-git-branch**
 
-  *Sets the sonar.branch property to the current git branch (when it's not yet set).
+  * Sets the sonar.branch property to the current git branch (when it's not yet set).
   When set already, the property will not be overridden.*
 * **set-sonar-execution-start**
 
-  *Looks at the project in sonar and stores the last run timestamp in the property 'sonar.execution.start' (as an ISO formatted string).
+  * Looks at the project in sonar and stores the last run timestamp in the property 'sonar.execution.start' (as an ISO formatted string).
   When the timestamp is not found, the current time will be stored in the property.
   When set already, the property will not be overridden.*
 * **link-project-to-qualitygate**
 
-  *Links the project to the quality gate defined in the property 'sonar.qualitygate'*
+  * Links the project to the quality gate defined in the property 'sonar.qualitygate'*
 * **validate-qualitygate**
 
-  *Checks if the project did pass the quality gate (i.e. property 'sonar.qualitygate') after last sonar run.
+  * Checks if the project did pass the quality gate (i.e. property 'sonar.qualitygate') after last sonar run.
   If the quality gate is not met, the maven build will break.*
 
 ## set-git-branch
-*Sets the sonar.branch property to the current git branch (when it's not yet set).
+* Sets the sonar.branch property to the current git branch (when it's not yet set).
 When set already, the property will not be overridden. When the branchname (set by the user / GIT branch name) contains speciale characters (e.g. '/') then those will be replaced by '-'. This is because sonar can't threat that character in its key name.*
 
 ##### Required properties
@@ -39,7 +39,7 @@ none
 mvn com.viae-it.maven:sonar-maven-plugin:set-git-branch
 
 ## set-sonar-execution-start
-*This will call sonar via the API, look for the last run timestamp and store it in the 'sonar.execution.start' property.
+* This will call sonar via the API, look for the last run timestamp and store it in the 'sonar.execution.start' property.
 When there was no last run configuration found, the timestamp will be set to now.
 When the 'sonar.execution.start' property is set, the [validate-qualitygate](https://github.com/VandeperreMaarten/sonar-maven-plugin#validate-qualitygate) will use it to verify that the new run has ended.
 
@@ -56,7 +56,7 @@ When the 'sonar.execution.start' property is set, the [validate-qualitygate](htt
 mvn com.viae-it.maven:sonar-maven-plugin:com.viae-it.maven:sonar-maven-plugin:set-sonar-execution-start
 
 ## link-project-to-qualitygate
-*This will take the quality gate from the 'sonar.qualitygate' property and will link the corresponding project to it
+* This will take the quality gate from the 'sonar.qualitygate' property and will link the corresponding project to it
 (i.e. the project for which this configuration is set up).*
 
 **Important note**: most of the time you have to make sure that is user is allowed to change the quality gate configurations.
@@ -77,7 +77,7 @@ sufficient rights on 'Administer Quality Profiles and Gates' permission.*
 mvn com.viae-it.maven:sonar-maven-plugin:link-project-to-qualitygate
 
 ## validate-qualitygate
-*Checks if the project did pass the quality gate (i.e. property 'sonar.qualitygate') after last sonar run.
+* Checks if the project did pass the quality gate (i.e. property 'sonar.qualitygate') after last sonar run.
 If the quality gate is not met, the maven build will break and will show the condition states (also from the ones that were passed).
 If the 'sonar.execution.start' property is set, the validation run will wait until the timestamp of the last run is after this value
 (can be set via [set-sonar-execution-start](https://github.com/VandeperreMaarten/sonar-maven-plugin#set-sonar-execution-start)). If nothing changed for 5 minutes, an exception will be thrown.
