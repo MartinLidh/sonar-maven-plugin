@@ -2,7 +2,7 @@
 This plugin is created to validate sonar quality gates and set sonar configuration through maven.
 
 # Table of Contents
-1. [Goal: /#user-content-components-overview](Components overview)
+1. [Components overview](/#components-overview)
 2. [Goal: set-git-branch](set-git-branch)
 3. [Goal: set-sonar-execution-start](set-sonar-execution-start)
 4. [Goal: link-project-to-qualitygate](link-project-to-qualitygate)
