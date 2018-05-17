@@ -12,5 +12,5 @@ package com.viae.maven.sonar;
 public class GlobalSettings {
     public static final String BRANCH_NAME = "master";
     //TODO put this in a main configuration
-    public static final String SONAR_BRANCH_PROPERTY_NAME = "sonar.branch";
+    public static final String SONAR_BRANCH_PROPERTY_NAME = "sonar.branch.name";
 }
