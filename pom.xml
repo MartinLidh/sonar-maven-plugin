@@ -1,25 +1,25 @@
-git<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.viae-it.maven</groupId>
 	<artifactId>sonar-maven-plugin</artifactId>
-	<version>1.0.15-SNAPSHOT</version>
+	<version>1.0.15</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>This plugin will make maven interact with SONAR.</description>
-	<url>https://github.com/VandeperreMaarten/sonar-build-breaker-maven-plugin</url>
+	<url>https://github.com/MartinLidh/sonar-maven-plugin</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<scm>
-		<url>https://github.com/VandeperreMaarten/sonar-maven-plugin</url>
-		<connection>scm:git:git//github.com/VandeperreMaarten/sonar-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:VandeperreMaarten/sonar-maven-plugin.git</developerConnection>
-	</scm>
+		<url>https://github.com/MartinLidh/sonar-maven-plugin</url>
+		<connection>scm:git:git@github.com:MartinLidh/sonar-maven-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:MartinLidh/sonar-maven-plugin.git</developerConnection>
+    <tag>sonar-maven-plugin-1.0.15</tag>
+  </scm>
 	<licenses>
 		<license>
 			<name>MIT License</name>
