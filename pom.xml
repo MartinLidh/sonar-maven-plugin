@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.viae-it.maven</groupId>
 	<artifactId>sonar-maven-plugin</artifactId>
-	<version>1.0.15</version>
+	<version>1.0.15-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -16,8 +16,8 @@
 
 	<scm>
 		<url>https://github.com/MartinLidh/sonar-maven-plugin</url>
-		<connection>scm:git:git@github.com:MartinLidh/sonar-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:MartinLidh/sonar-maven-plugin.git</developerConnection>
+		<connection>scm:git:ssh://git@github.com/MartinLidh/sonar-maven-plugin.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/MartinLidh/sonar-maven-plugin.git</developerConnection>
     <tag>sonar-maven-plugin-1.0.15</tag>
   </scm>
 	<licenses>
